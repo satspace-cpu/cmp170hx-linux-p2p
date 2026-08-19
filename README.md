@@ -1,213 +1,154 @@
 # CMP 170HX Linux P2P
 
-Experimental Linux patches and setup notes for enabling working CUDA Peer-to-Peer communication between NVIDIA CMP 170HX GPUs.
+Experimental Linux patch and documentation for enabling **working CUDA Peer-to-Peer (P2P)** communication between NVIDIA CMP 170HX GPUs.
 
-## Status
+> **Measured on 2× CMP 170HX 64 GB:** ~6.5–6.7 GB/s one-way, ~13 GB/s bidirectional, ~1.6 µs GPU-to-GPU latency over PCIe Gen2 x16.
 
-Tested successfully on a dual-CMP 170HX system with NVIDIA Open GPU Kernel Modules 610.43.03.
+## Why this project exists
 
-### Tested configuration
-
-- 2× NVIDIA CMP 170HX, 64 GB each
-- NVIDIA driver / KMD: 610.43.03
-- CUDA UMD: 13.3
-- Linux kernel: 7.0.0-29-generic
-- PCIe: Gen2 x16 per GPU
-- IOMMU: disabled
-- ACS redirect: disabled for both GPU root ports
-
-## Measured result
-
-Before the final fixes, CUDA reported peer access as available, but P2P bandwidth was broken:
+On the tested system CUDA reported that peer access was available, yet actual P2P bandwidth was catastrophically slow:
 
 ```text
 Device=0 CAN Access Peer Device=1
 Device=1 CAN Access Peer Device=0
 
 P2P Enabled bandwidth: ~0.29–0.49 GB/s
-Bidirectional: ~0.5–0.9 GB/s
 ```
 
-After the mailbox fix and fully disabling IOMMU:
+After fixing the CMP/GA100 mailbox path and fully disabling IOMMU, the same test reached:
 
 ```text
 GPU0 -> GPU1: 6.46 GB/s
 GPU1 -> GPU0: 6.69 GB/s
-
-Bidirectional:
-GPU0 <-> GPU1: 12.90–13.18 GB/s
-
-GPU latency:
-~1.59–1.65 us
+Bidirectional: 12.90–13.18 GB/s
+GPU latency: 1.59–1.65 us
 ```
 
-For comparison, with P2P disabled on the same system:
+The key lesson is simple: **`CAN Access Peer = YES` does not prove that the P2P data path is healthy. Always benchmark it.**
 
-```text
-GPU0 -> GPU1: ~5.88 GB/s
-GPU1 -> GPU0: ~5.94 GB/s
-Bidirectional: ~8.1–8.3 GB/s
+## Tested configuration
+
+| Component | Tested value |
+|---|---|
+| GPUs | 2× NVIDIA CMP 170HX, 64 GB each |
+| NVIDIA KMD | 610.43.03 |
+| CUDA UMD | 13.3 |
+| Linux kernel | 7.0.0-29-generic |
+| PCIe | Gen2 x16 per GPU |
+| IOMMU | Disabled |
+| ACS redirect | Disabled for both GPU root ports |
+
+## Quick navigation
+
+- [Installation and verification](docs/INSTALL.md)
+- [How the P2P failure and fix work](docs/P2P-EXPLAINED.md)
+- [Benchmarks](docs/BENCHMARKS.md)
+- [Troubleshooting](docs/TROUBLESHOOTING.md)
+- [Mailbox patch](patches/p2p-cmp170-mailbox-fix.patch)
+- [Patch notes](patches/README.md)
+- [Contribution / reproduction guide](CONTRIBUTING.md)
+- [Raw successful benchmark](results/dual-cmp170hx-610.43.03.txt)
+
+## The CMP mailbox fix
+
+The broader P2P modification being tested forced:
+
+```c
+pKernelBif->pcieP2PType = NV_REG_STR_RM_PCIEP2P_TYPE_BAR1;
 ```
 
-This corresponds to roughly +10–13% unidirectional bandwidth and +58–60% bidirectional bandwidth, while GPU-to-GPU latency drops dramatically.
-
-## Important finding
-
-`cudaDeviceCanAccessPeer()` returning true is **not sufficient proof** that P2P is working correctly.
-
-Our broken configuration already reported:
-
-```text
-Device=0 CAN Access Peer Device=1
-Device=1 CAN Access Peer Device=0
-```
-
-and even showed low P2P latency, while actual bandwidth was only ~0.29–0.49 GB/s.
-
-Always verify peer bandwidth with `p2pBandwidthLatencyTest`.
-
-## Root causes found
-
-Two separate issues were identified on the tested CMP 170HX setup:
-
-1. The P2P patch forced `NV_REG_STR_RM_PCIEP2P_TYPE_BAR1`, but the GA100/CMP mailbox path expects the normal PCIe mailbox setup. This left `writeMailboxBar1Addr` at the invalid value `0xffffffffffffffff`.
-2. Even after fixing the mailbox allocation, Linux IOMMU remained active and reduced peer bandwidth to ~0.5 GB/s. Fully disabling IOMMU restored normal PCIe P2P performance.
-
-Debug output before the mailbox fix:
+On the tested GA100-based CMP 170HX system, that left the normal PCIe write-mailbox address invalid:
 
 ```text
 mailbox=0xffffffffffffffff
 baseMask=0xfff
 ```
 
-After the mailbox fix:
+and triggered:
+
+```text
+Assertion failed: ((base & RM_PAGE_MASK) == 0)
+```
+
+The working change is:
+
+```c
+pKernelBif->pcieP2PType = NV_REG_STR_RM_PCIEP2P_TYPE_DEFAULT;
+```
+
+After this change:
 
 ```text
 mailbox=0x0
 baseMask=0x0
 ```
 
-## Mailbox fix
+The ready-to-apply patch is in [`patches/p2p-cmp170-mailbox-fix.patch`](patches/p2p-cmp170-mailbox-fix.patch).
 
-File:
+## IOMMU was the second bottleneck
 
-```text
-src/nvidia/src/kernel/gpu/bif/kernel_bif.c
-```
+Fixing the mailbox removed the assertion, but P2P bandwidth was still only ~0.47–0.49 GB/s while Linux IOMMU remained active.
 
-Change:
-
-```c
-pKernelBif->pcieP2PType = NV_REG_STR_RM_PCIEP2P_TYPE_BAR1;
-```
-
-to:
-
-```c
-pKernelBif->pcieP2PType = NV_REG_STR_RM_PCIEP2P_TYPE_DEFAULT;
-```
-
-A ready-to-apply patch is included in `patches/p2p-cmp170-mailbox-fix.patch`.
-
-## IOMMU requirement
-
-On the tested bare-metal Linux system, P2P bandwidth only became healthy after fully disabling IOMMU.
-
-Example GRUB configuration:
+On the tested bare-metal system, the final working kernel command line included:
 
 ```text
-GRUB_CMDLINE_LINUX_DEFAULT="quiet splash intel_iommu=off iommu=off"
+intel_iommu=off iommu=off
 ```
 
-If you also need to disable ACS redirect for specific GPU root ports, keep those parameters as well, for example:
+After rebooting with IOMMU fully disabled, P2P bandwidth jumped to ~6.5–6.7 GB/s per direction.
 
-```text
-GRUB_CMDLINE_LINUX_DEFAULT="quiet splash intel_iommu=off iommu=off pci=disable_acs_redir=0000:80:02.0 pci=disable_acs_redir=0000:80:03.0"
-```
+> Disabling IOMMU affects DMA isolation, virtualization and PCI passthrough. Read [INSTALL.md](docs/INSTALL.md) before changing your system.
 
-**Do not copy those PCI addresses blindly.** They are motherboard/topology-specific.
+## Before / after
 
-Then run:
+| Metric | P2P disabled | Broken P2P | Working P2P |
+|---|---:|---:|---:|
+| 0→1 bandwidth | ~5.88 GB/s | ~0.29–0.47 GB/s | **6.46 GB/s** |
+| 1→0 bandwidth | ~5.94 GB/s | ~0.29–0.49 GB/s | **6.69 GB/s** |
+| Bidirectional | ~8.1–8.3 GB/s | ~0.5–0.9 GB/s | **12.90–13.18 GB/s** |
+| GPU P2P latency | tens of µs without peer path | ~1.6–1.9 µs | **~1.6 µs** |
+
+For the full measurement history, see [BENCHMARKS.md](docs/BENCHMARKS.md).
+
+## Verify your own system
+
+Run the read-only helper:
 
 ```bash
-sudo update-grub
-sudo reboot
+bash scripts/check-p2p.sh
 ```
 
-Verify after reboot:
+For a shareable diagnostic report:
 
 ```bash
-cat /proc/cmdline
+bash scripts/collect-debug-info.sh
 ```
 
-and confirm that `intel_iommu=off iommu=off` is present.
-
-Disabling IOMMU has system-wide consequences for DMA isolation, virtualization and passthrough. Use this only if the trade-off is acceptable for your machine.
-
-## Verify P2P
-
-Build and run NVIDIA's CUDA sample:
+Then run NVIDIA's `p2pBandwidthLatencyTest`. A healthy result on the tested Gen2 x16 setup is approximately:
 
 ```text
-cuda-samples/Samples/5_Domain_Specific/p2pBandwidthLatencyTest
+Unidirectional P2P enabled: 6.4–6.7 GB/s
+Bidirectional P2P enabled: 12.9–13.2 GB/s
+GPU latency: ~1.6 us
 ```
-
-Expected capability result:
-
-```text
-Device=0 CAN Access Peer Device=1
-Device=1 CAN Access Peer Device=0
-```
-
-But also verify actual P2P-enabled bandwidth. On the tested dual-CMP Gen2 x16 system, a healthy result is around:
-
-```text
-Unidirectional: 6.4–6.7 GB/s
-Bidirectional: 12.9–13.2 GB/s
-Latency: ~1.6 us
-```
-
-## Patch order used in the tested driver tree
-
-```text
-sec2-postbl-plm-ss-cfg.patch
-booter-verify.patch
-late-pma.patch
-bar0-pramin-clamp.patch
-ce-scrub-workarounds.patch
-persistent-sw-state.patch
-pcie-gen2.patch
-pcie-gen2-probe-retrain.patch
-pcie-gen2-early-watcher.patch
-p2p-bar1-610.patch
-p2p-cmp170-mailbox-fix.patch
-name-string.patch
-```
-
-Optional debug patch:
-
-```text
-p2p-bar1-610.patch
-p2p-cmp170-mailbox-fix.patch
-p2p-cmp170-debug.patch
-name-string.patch
-```
-
-The debug patch is not required for normal use.
 
 ## AI / LLM relevance
 
-Working P2P is particularly useful for multi-GPU workloads such as:
+Working peer transport is useful for multi-GPU workloads such as:
 
-- llama.cpp tensor split
+- `llama.cpp` tensor split
 - multi-GPU local LLM inference
 - CUDA peer transfers
 - tensor-parallel workloads
 
-In the first practical tests after fixing P2P, GPU utilization during tensor-split inference became noticeably smoother and stopped showing the previous oscillating behavior.
+In the first practical tensor-split tests after the final P2P fix, utilization across both CMP GPUs became noticeably smoother and stopped showing the previous oscillating pattern. Application token/s gains are workload-dependent and should be benchmarked separately from the CUDA transport test.
 
 ## Experimental status
 
-This result has been reproduced on one tested system with two CMP 170HX cards. Other driver versions, kernels, motherboards and PCIe topologies may behave differently.
+This result has currently been validated on **one dual-CMP 170HX system**. Other driver versions, kernels, motherboards and PCIe topologies may behave differently.
 
-Please open an issue with your hardware, kernel, driver, topology and `p2pBandwidthLatencyTest` results if you reproduce it.
+If you reproduce the result, please open a GitHub issue using the reproduction template and include your full `p2pBandwidthLatencyTest` output. More independent systems are needed before this can be considered broadly validated.
+
+## License
+
+Project-authored scripts and documentation are released under the [MIT License](LICENSE). NVIDIA source code and NVIDIA Open GPU Kernel Modules remain under their respective upstream licenses; this repository does not redistribute NVIDIA proprietary binaries.
