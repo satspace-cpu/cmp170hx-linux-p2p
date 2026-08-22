@@ -13,7 +13,69 @@ CUDA UMD: 13.3
 Kernel: 7.0.0-29-generic
 ```
 
-## Summary table
+## MMA / Tensor Core unlock verification
+
+A 64 GB memory unlock alone does not prove that the CMP compute throttle is gone. We therefore verified the Tensor Core path independently using both throughput measurements and direct `mma.sync` latency microbenchmarks.
+
+Direct test guide:
+
+- [English — MMA/Tensor unlock verification](MMA-UNLOCK.md)
+- [Русский — проверка полного MMA/Tensor unlock](MMA-UNLOCK.ru.md)
+
+### Tensor throughput
+
+| Compute test | GPU0 | GPU1 |
+|---|---:|---:|
+| TF32 Tensor | 99.82 TFLOPS | 98.06 TFLOPS |
+| BF16 Tensor | 201.55 TFLOPS | 198.00 TFLOPS |
+| INT8 Tensor | 409.77 TOPS | 403.00 TOPS |
+
+### Direct MMA latency
+
+Measured with `arabel1a/gpu-micro-bench` using:
+
+```bash
+~/gpu-micro-bench/bin/tensor_bench 0 10000 1000 20
+~/gpu-micro-bench/bin/tensor_bench 1 10000 1000 20
+```
+
+| MMA latency test | GPU0 | GPU1 |
+|---|---:|---:|
+| F16 `mma.sync` | 26.0 cycles | 26.5 cycles |
+| BF16 `mma.sync` | 26.0 cycles | 26.5 cycles |
+| TF32 `mma.sync` | 26.0 cycles | 26.5 cycles |
+| INT8 `mma.sync` | 26.8 cycles | 27.3 cycles |
+
+A throttled CMP 170HX is expected to be around the ~256-cycle regime; our ~26-cycle results directly confirm the full MMA/Tensor compute unlock on both cards.
+
+## HBM clock A/B
+
+We also verified that userspace HBM tuning changes real bandwidth rather than merely changing the NDIV register.
+
+| HBM setting | Global read | Global triad | cudaMemcpy D2D |
+|---|---:|---:|---:|
+| NDIV 64 / 1728 MHz | 1669.19 GB/s | 1605.24 GB/s | 1584.58 GB/s |
+| NDIV 70 / 1890 MHz | 1818.99 GB/s | 1767.93 GB/s | 1756.65 GB/s |
+
+The NDIV 70 run therefore produced roughly a 9–11% real memory-bandwidth increase over stock on this card.
+
+## llama.cpp compute / multi-GPU A/B
+
+Using the same Qwen 3.8 27B BF16 model (50.89 GiB) and the same `llama-bench` build:
+
+```text
+1x CMP 170HX:
+pp512 = 1141.23 t/s
+tg128 =   24.72 t/s
+
+2x CMP 170HX, layer split 50/50:
+pp512 = 1842.04 t/s
+tg128 =   26.97 t/s
+```
+
+The second CMP improved prompt processing by about 61% and single-stream token generation by about 9% on this workload. For `llama-bench`, the correct two-GPU tensor-split syntax is `-ts 50/50`; `50,50` requests two separate benchmark parameter values.
+
+## P2P summary table
 
 | Stage | P2P state | 0→1 GB/s | 1→0 GB/s | Bidirectional 0→1 | Bidirectional 1→0 | GPU latency 0→1 | GPU latency 1→0 |
 |---|---|---:|---:|---:|---:|---:|---:|
@@ -24,7 +86,7 @@ Kernel: 7.0.0-29-generic
 | Final config, IOMMU off | Disabled | 5.88 | 5.94 | 8.06 | 8.32 | 62.67 µs | 17.57 µs |
 | Final config, IOMMU off | **Enabled** | **6.46** | **6.69** | **12.90** | **13.18** | **1.65 µs** | **1.59 µs** |
 
-## Final working result
+## Final working P2P result
 
 ```text
 Unidirectional P2P=Enabled Bandwidth (P2P Writes) Matrix (GB/s)
@@ -43,7 +105,7 @@ P2P=Enabled Latency (P2P Writes) Matrix (us)
      1   1.59   2.37
 ```
 
-## Before vs after
+## P2P before vs after
 
 Using the final P2P-disabled and P2P-enabled measurements:
 
@@ -72,4 +134,4 @@ That combination proves why capability and latency alone are not enough to valid
 
 ## LLM observation
 
-After the final P2P fix, tensor-split inference showed noticeably smoother utilization across both GPUs, with much less oscillation in load. LLM token-per-second measurements are workload-dependent and should be collected separately from the CUDA transport benchmark.
+After the final P2P fix, tensor-split inference showed noticeably smoother utilization across both GPUs, with much less oscillation in load. LLM token-per-second measurements remain workload-dependent, so CUDA transport benchmarks and LLM throughput should be treated as complementary measurements rather than interchangeable proof.
