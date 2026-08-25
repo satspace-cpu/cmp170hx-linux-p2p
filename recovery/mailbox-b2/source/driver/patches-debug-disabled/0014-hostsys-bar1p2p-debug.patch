@@ -1,0 +1,31 @@
+Local instrumentation (not upstream): why BAR1 P2P is still rejected.
+
+kbusIsPcieBar1P2PMappingSupported_GH100 now ACCEPTs (all four gates pass once the
+mailbox peer pre-registration is skipped), yet connType is still 1. The only
+remaining decision point in _kp2pCapsGetStatusOverPcieBar1 is the host-system
+read-cap check, which returns OK only for a common PCIe switch, Ryzen, or
+Xeon-SPR. This host is a Xeon E5 v4, so it depends entirely on
+bCommonPciSwitchFound. Log it rather than guess.
+
+--- k/src/nvidia/src/kernel/platform/p2p/p2p_caps.c	2026-08-07 18:09:26.910536311 -0700
++++ l/src/nvidia/src/kernel/platform/p2p/p2p_caps.c	2026-08-07 18:09:26.934224315 -0700
+@@ -669,6 +669,19 @@
+         NV_PRINTF(LEVEL_INFO, "Unrecognized CPU. Read Cap is disabled\n");
+     }
+ 
++    //
++    // cmpunlocker instrumentation: BAR1 P2P passes every per-peer gate but
++    // _kp2pCapsGetStatusOverPcieBar1 still returns NOT_SUPPORTED. This is the
++    // only remaining place it can be decided. The read cap here is OK only for a
++    // common PCIe switch, Ryzen, or Xeon-SPR; this host is a Xeon E5 v4, so it
++    // rides entirely on bCommonPciSwitchFound.
++    //
++    NV_PRINTF(LEVEL_ERROR,
++              "CMPUNLOCK_BAR1P2P: hostsys commonSwitch=%u cpuType=0x%x "
++              "readCap=0x%x writeCap=0x%x\n",
++              (NvU32)bCommonPciSwitchFound, (NvU32)pSys->cpuInfo.type,
++              (NvU32)*pP2PReadCapStatus, (NvU32)*pP2PWriteCapStatus);
++
+     return NV_OK;
+ }
+ 

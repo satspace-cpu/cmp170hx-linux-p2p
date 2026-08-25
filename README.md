@@ -8,7 +8,7 @@ A beginner-friendly end-to-end guide for NVIDIA CMP 170HX owners.
 
 **stock CMP 170HX → memory/compute unlock → 170tune validation → physical PCIe x4→x16 hardware mod → PCIe Gen2 software unlock → working CUDA P2P → multi-GPU LLM testing**
 
-> **Measured on our 2× CMP 170HX 64 GB system:** ~6.46–6.69 GB/s one-way P2P, ~12.90–13.18 GB/s bidirectional, ~1.59–1.65 µs GPU-to-GPU latency over PCIe Gen2 x16.
+> **Latest restored Mailbox B2 result on our 2× CMP 170HX 64 GB system:** 6.69–6.70 GB/s one-way P2P, 13.37–13.40 GB/s bidirectional and 1.54–1.62 µs GPU-to-GPU latency over PCIe Gen2 x16. Bayley static BAR1 measured 5.30 / 10.28 GB/s and 1.68–1.73 µs on the same host.
 
 ---
 
@@ -126,6 +126,12 @@ GPU1 -> GPU0: 6.69 GB/s
 Bidirectional: 12.90–13.18 GB/s
 GPU latency: 1.59–1.65 us
 ```
+
+After rebuilding the lost system disk, the restored Mailbox B2 path improved
+this further to **6.69–6.70 GB/s one-way**, **13.37–13.40 GB/s bidirectional**
+and **1.54–1.62 µs**. On the same Gen2 x16 setup, Bayley static BAR1 produced
+5.30 GB/s, 10.28 GB/s and 1.68–1.73 µs. Full reproducible source and rollback
+instructions: [recovery/mailbox-b2](recovery/mailbox-b2/).
 
 Full results: [docs/BENCHMARKS.md](docs/BENCHMARKS.md)
 

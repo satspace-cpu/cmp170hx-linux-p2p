@@ -86,6 +86,37 @@ The second CMP improved prompt processing by about 61% and single-stream token g
 | Final config, IOMMU off | Disabled | 5.88 | 5.94 | 8.06 | 8.32 | 62.67 µs | 17.57 µs |
 | Final config, IOMMU off | **Enabled** | **6.46** | **6.69** | **12.90** | **13.18** | **1.65 µs** | **1.59 µs** |
 
+## Bayley BAR1 vs restored Mailbox B2 (kernel 7.0.12)
+
+After the original system disk was lost, the driver and the custom
+`7.0.12-cmp170bar1test` kernel were rebuilt. The kernel preserves a full 64 GB
+BAR1 on both cards; without its BAR/MMIO fix the second card received only
+32 GB.
+
+We first validated the current Bayley static-BAR1 implementation, then rebuilt
+the faster mailbox path on the same Bayley unlock/Gen2/BAR1/FBPA base. Both
+tests used 2× CMP 170HX at Gen2 x16, 64 GB VRAM/BAR1, IOMMU off, ACS redirect
+disabled, 300 W and userspace HBM NDIV 70 (1890 MHz).
+
+| P2P implementation | One-way | Bidirectional | GPU latency |
+|---|---:|---:|---:|
+| Bayley static BAR1 | 5.30 GB/s | 10.28 GB/s | 1.68–1.73 µs |
+| Restored Mailbox B2 | **6.69–6.70 GB/s** | **13.37–13.40 GB/s** | **1.54–1.62 µs** |
+
+The restored mailbox path is about 26% faster one-way and about 30% faster
+bidirectionally than static BAR1 on this Gen2 x16 host. Four consecutive
+mailbox runs were stable. The saved recovery source and procedure are in
+[`recovery/mailbox-b2/`](../recovery/mailbox-b2/).
+
+The successful B2 design keeps Bayley's unified memory, Gen2, BAR1 and FBPA
+unlock code, enables the P2P capability override, but selects NVIDIA's default
+GA100 mailbox protocol instead of forcing `RMPcieP2PType=1`:
+
+```c
+pKernelBif->p2pOverride = bCmp170hx ? 0x11 : BIF_P2P_NOT_OVERRIDEN;
+pKernelBif->pcieP2PType = NV_REG_STR_RM_PCIEP2P_TYPE_DEFAULT;
+```
+
 ## Final working P2P result
 
 ```text

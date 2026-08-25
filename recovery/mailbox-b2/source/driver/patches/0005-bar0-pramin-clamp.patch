@@ -1,0 +1,26 @@
+--- a/src/nvidia/src/kernel/gpu/bus/arch/maxwell/kern_bus_gm107.c
++++ b/src/nvidia/src/kernel/gpu/bus/arch/maxwell/kern_bus_gm107.c
+@@ -50,6 +50,7 @@
+ #include "published/maxwell/gm107/dev_mmu.h"
+ 
+ #include "class/cl90f1.h"  // FERMI_VASPACE_A
++#include "gpu/cmpunlock/cmpunlock.h"
+ 
+ #define MAXWELL_BAR2_VBIOS_OFFSET           (BUS_BAR2_RM_APERTURE_MB<<20)
+ 
+@@ -220,6 +221,15 @@
+     else
+     {
+         offsetBar0 = (pMemoryManager->Ram.fbAddrSpaceSizeMb << 20) - DRF_SIZE(NV_PRAMIN);
++
++        //
++        // The BAR0 window only decodes the stock 8GB, so keep PRAMIN where it
++        // would have landed before the unlock widened fbAddrSpaceSizeMb.
++        //
++        if (cmpUnlockIsTarget(pGpu) && pMemoryManager->Ram.fbAddrSpaceSizeMb > 0x2000)
++        {
++            offsetBar0 = (0x2000ULL << 20) - DRF_SIZE(NV_PRAMIN);
++        }
+     }
+ 
+     //

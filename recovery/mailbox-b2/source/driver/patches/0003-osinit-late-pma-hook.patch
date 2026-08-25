@@ -1,0 +1,19 @@
+--- a/src/nvidia/arch/nvalloc/unix/src/osinit.c
++++ b/src/nvidia/arch/nvalloc/unix/src/osinit.c
+@@ -57,6 +57,7 @@
+ #include <kernel/gpu/fifo/kernel_fifo.h>
+ #include <nv-firmware-chip-family-select.h>
+ #include <kernel/gpu/gsp/kernel_gsp.h>
++#include <kernel/gpu/cmpunlock/cmpunlock.h>
+ #include "liblogdecode.h"
+ 
+ #include <mem_mgr/virt_mem_mgr.h>
+@@ -2195,6 +2196,8 @@
+         goto shutdown;
+     }
+ 
++    cmpUnlockLateExtendPma(pGpu);
++
+     //
+     // Expanded GPU visibility in GPUMGR is no longer needed once the
+     // GPU is initialized.

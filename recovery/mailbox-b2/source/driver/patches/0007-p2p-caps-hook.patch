@@ -1,0 +1,19 @@
+diff --git a/src/nvidia/src/kernel/gpu/gpu.c b/src/nvidia/src/kernel/gpu/gpu.c
+--- a/src/nvidia/src/kernel/gpu/gpu.c
++++ b/src/nvidia/src/kernel/gpu/gpu.c
+@@ -77,6 +77,7 @@
+ #include "platform/chipset/chipset.h"
+ #include "kernel/gpu/host_eng/host_eng.h"
+ #include "gpu/bif/kernel_bif.h"
++#include "gpu/cmpunlock/cmpunlock.h"
+ #include "gpu/ce/kernel_ce.h"
+ #include "kernel/gpu/mem_mgr/mem_mgr.h"
+ #include "kernel/gpu/mig_mgr/kernel_mig_manager.h"
+@@ -2517,6 +2518,7 @@
+
+     pGpu->pcieP2PReadCaps = p2pCapsParams.p2pReadCapsStatus;
+     pGpu->pcieP2PWriteCaps = p2pCapsParams.p2pWriteCapsStatus;
++    cmpUnlockForceP2PCaps(pGpu);
+ }
+
+ static void

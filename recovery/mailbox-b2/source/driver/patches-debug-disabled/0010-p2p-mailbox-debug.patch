@@ -1,0 +1,79 @@
+Local instrumentation (not upstream): expose the swallowed P2P mailbox status.
+
+kbusSetupMailboxes_GM200 configures the PCIe write-mailbox by RPC to GSP
+(NV2080_CTRL_CMD_INTERNAL_BUS_SETUP_P2P_MAILBOX_LOCAL / _REMOTE), then checks
+the result with NV_ASSERT(). NV_ASSERT compiles out in a release build, so if
+GSP refuses these calls for CMP device IDs the driver carries on as though the
+mailbox were live -- which matches the observed failure exactly: peer access
+enables, cudaMemcpyPeer returns no error, and zero bytes are delivered.
+
+This prints both RPC statuses plus the addresses involved, and reads back
+NV_P2P_WREQMB_L/H for the peer being configured. Decision tree:
+
+  RPC != NV_OK                    -> GSP is refusing; must program directly
+  RPC == NV_OK but WREQMB stays 0 -> GSP silently no-ops the request
+  WREQMB programmed, copies fail  -> routing/HSHUB, not the mailbox
+
+Also logs the connection type actually selected, to confirm we are on the
+PCIE_PROPRIETARY (mailbox) path rather than BAR1.
+
+--- a/src/nvidia/src/kernel/gpu/bus/arch/maxwell/kern_bus_gm200.c	2026-08-06 22:17:11.847445146 -0700
++++ b/src/nvidia/src/kernel/gpu/bus/arch/maxwell/kern_bus_gm200.c	2026-08-06 22:17:34.822107930 -0700
+@@ -127,6 +127,13 @@
+                               NV2080_CTRL_CMD_INTERNAL_BUS_SETUP_P2P_MAILBOX_LOCAL,
+                               &params0,
+                               sizeof(NV2080_CTRL_CMD_INTERNAL_BUS_SETUP_P2P_MAILBOX_LOCAL_PARAMS));
++    NV_PRINTF(LEVEL_ERROR,
++              "CMPUNLOCK_MBOX: SETUP_LOCAL gpu=%d l2r=%u r2l=%u status=0x%x "
++              "localP2PDomRemoteAddr=0x%llx remoteP2PDomLocalAddr=0x%llx "
++              "remoteWMBoxLocalAddr=0x%llx war999673=%u\n",
++              pGpu0->gpuInstance, local2Remote, remote2Local, status,
++              (NvU64)localP2PDomainRemoteAddr, (NvU64)remoteP2PDomainLocalAddr,
++              (NvU64)remoteWMBoxLocalAddr, (NvU32)bNeedWarBug999673);
+     NV_ASSERT(status == NV_OK);
+ 
+     // Setup PCIE P2P Mailbox on remote GPU
+@@ -143,8 +150,29 @@
+                               NV2080_CTRL_CMD_INTERNAL_BUS_SETUP_P2P_MAILBOX_REMOTE,
+                               &params1,
+                               sizeof(NV2080_CTRL_CMD_INTERNAL_BUS_SETUP_P2P_MAILBOX_REMOTE_PARAMS));
++    NV_PRINTF(LEVEL_ERROR,
++              "CMPUNLOCK_MBOX: SETUP_REMOTE gpu=%d l2r=%u r2l=%u status=0x%x "
++              "remoteWMBoxAddrU64=0x%llx wmboxBar1Addr=0x%llx\n",
++              pGpu1->gpuInstance, local2Remote, remote2Local, status,
++              (NvU64)remoteWMBoxAddrU64,
++              (NvU64)pKernelBus1->p2pPcie.writeMailboxBar1Addr);
+     NV_ASSERT(status == NV_OK);
+ 
++    /*
++     * Read the mailbox routing registers back. If GSP actually programmed the
++     * mailbox these are non-zero for the configured peer; all-zero means the
++     * request was accepted and silently dropped.
++     */
++    NV_PRINTF(LEVEL_ERROR,
++              "CMPUNLOCK_MBOX: readback gpu0=%d WREQMB[%u] L=0x%08x H=0x%08x | "
++              "gpu1=%d WREQMB[%u] L=0x%08x H=0x%08x\n",
++              pGpu0->gpuInstance, local2Remote,
++              GPU_REG_RD32(pGpu0, NV_P2P_WREQMB_L(local2Remote)),
++              GPU_REG_RD32(pGpu0, NV_P2P_WREQMB_H(local2Remote)),
++              pGpu1->gpuInstance, remote2Local,
++              GPU_REG_RD32(pGpu1, NV_P2P_WREQMB_L(remote2Local)),
++              GPU_REG_RD32(pGpu1, NV_P2P_WREQMB_H(remote2Local)));
++
+     kbusWriteP2PWmbTag_HAL(pGpu1, pKernelBus1, remote2Local, params0.p2pWmbTag);
+ }
+ 
+--- a/src/nvidia/src/kernel/gpu/bus/p2p_api.c	2026-08-06 22:17:11.848993611 -0700
++++ b/src/nvidia/src/kernel/gpu/bus/p2p_api.c	2026-08-06 22:17:34.823028229 -0700
+@@ -431,6 +431,11 @@
+         return NV_ERR_NOT_SUPPORTED;
+     }
+ 
++    NV_PRINTF(LEVEL_ERROR,
++              "CMPUNLOCK_MBOX: p2pCaps=0x%x connType=%u (3=PCIE_BAR1 4=PCIE_PROP) "
++              "write=%u read=%u\n",
++              p2pCaps, p2pConnectionType, bP2PWriteCapable, bP2PReadCapable);
++
+     //
+     // Allocate P2P PCIE Mailbox areas if all of the following conditions occur:
+     // - P2P reads or/and writes are supported

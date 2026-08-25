@@ -1,0 +1,29 @@
+--- a/src/nvidia/src/kernel/gpu/mem_mgr/mem_scrub.c
++++ b/src/nvidia/src/kernel/gpu/mem_mgr/mem_scrub.c
+@@ -274,7 +274,7 @@
+     if (!API_GPU_IN_RESET_SANITY_CHECK(pGpu))
+     {
+         RMTIMEOUT     timeout;
+-        gpuSetTimeout(pGpu, GPU_TIMEOUT_DEFAULT, &timeout, 0);
++        gpuSetTimeout(pGpu, 25000000, &timeout, GPU_TIMEOUT_FLAGS_OSTIMER);
+
+         while (_isScrubWorkPending(pScrubber))
+         {
+@@ -871,7 +871,7 @@
+     if (itemsToSave == 0)
+         goto done;
+
+-    gpuSetTimeout(pGpu, GPU_TIMEOUT_DEFAULT, &timeout, 0);
++    gpuSetTimeout(pGpu, 25000000, &timeout, GPU_TIMEOUT_FLAGS_OSTIMER);
+
+     while (_scrubCheckProgress(pScrubber) < (pScrubber->lastSeenIdByClient + itemsToSave))
+     {
+@@ -928,7 +928,7 @@
+         return NV_OK;
+     }
+
+-    gpuSetTimeout(pGpu, GPU_TIMEOUT_DEFAULT, &timeout, 0);
++    gpuSetTimeout(pGpu, 25000000, &timeout, GPU_TIMEOUT_FLAGS_OSTIMER);
+
+     // Loop will break out, when the semaphore is equal to payload, or times out
+     while (_scrubCheckProgress(pScrubber) < idToWait)

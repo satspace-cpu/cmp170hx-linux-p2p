@@ -1,0 +1,58 @@
+Local fix (not upstream): restore the BAR1-P2P read cap that bridge discovery loses.
+
+Measured on this host with everything else in place (64GB BAR1, static BAR1
+enabled, all four kbusIsPcieBar1P2PMappingSupported_GH100 gates ACCEPTED):
+
+  CMPUNLOCK_BAR1P2P: hostsys commonSwitch=0 cpuType=0x8 readCap=0x1 writeCap=0x0
+
+readCap 0x1 is CHIPSET_NOT_SUPPORTED, which makes
+_kp2pCapsGetStatusOverPcieBar1 return NV_ERR_NOT_SUPPORTED and the driver fall
+back to the mailbox (connType=1). The read cap is granted only for a common
+PCIe switch, Ryzen, or Xeon-SPR; this is a Xeon E5 v4, so it hinges on
+bCommonPciSwitchFound -- and clFindCommonDownstreamBR() returns 0xFF here even
+though lspci shows both GPUs on downstream ports of switch 09:00.0.
+
+This restores the cap for CMP device IDs only. See the in-code note: it assumes
+the cards really are behind a common switch, which must be re-verified on any
+differently-wired machine.
+
+--- m/src/nvidia/src/kernel/platform/p2p/p2p_caps.c	2026-08-07 18:24:45.256476055 -0700
++++ n/src/nvidia/src/kernel/platform/p2p/p2p_caps.c	2026-08-07 18:24:45.280088620 -0700
+@@ -682,6 +682,37 @@
+               (NvU32)bCommonPciSwitchFound, (NvU32)pSys->cpuInfo.type,
+               (NvU32)*pP2PReadCapStatus, (NvU32)*pP2PWriteCapStatus);
+ 
++    //
++    // cmpunlocker P2P: the read cap above is granted only for a common PCIe
++    // switch, Ryzen, or Xeon-SPR. On this host (Xeon E5 v4) it depends entirely
++    // on bCommonPciSwitchFound, and clFindCommonDownstreamBR() fails to identify
++    // the PLX switch these cards sit behind -- it returns 0xFF even though lspci
++    // shows both GPUs on downstream ports of the same switch (09:00.0, common
++    // bus 0x0a). That false negative is the last thing forcing the mailbox path.
++    //
++    // Override it for CMP device IDs only. This is the same topology that is
++    // reported working elsewhere at ~1.4 GB/s, so the cap is being restored to
++    // what the hardware actually supports rather than invented.
++    //
++    // NOTE: this assumes the CMP GPUs really are behind a common switch. Verify
++    // with `lspci -tv` before trusting P2P on a differently-wired machine; if
++    // they are on separate root ports, peer traffic must cross the host bridge
++    // and this override would be wrong.
++    //
++    {
++        NvU32 cmpDevId = pGpu->idInfo.PCIDeviceID >> 16;
++
++        if (((cmpDevId == 0x20C2) || (cmpDevId == 0x2082)) &&
++            (*pP2PReadCapStatus != NV0000_P2P_CAPS_STATUS_OK))
++        {
++            NV_PRINTF(LEVEL_ERROR,
++                      "CMPUNLOCK_BAR1P2P: forcing read cap OK for CMP devId=0x%x "
++                      "(clFindCommonDownstreamBR did not detect the PLX switch)\n",
++                      cmpDevId);
++            *pP2PReadCapStatus = NV0000_P2P_CAPS_STATUS_OK;
++        }
++    }
++
+     return NV_OK;
+ }
+ 

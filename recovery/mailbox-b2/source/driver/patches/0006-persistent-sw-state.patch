@@ -1,0 +1,20 @@
+--- a/kernel-open/nvidia/nv.c
++++ b/kernel-open/nvidia/nv.c
+@@ -1521,6 +1521,17 @@
+         goto failed_release_irq;
+     }
+ 
++    /*
++     * CMP 170HX: the unlock is applied once during GSP bootstrap, so the
++     * software state has to survive teardown rather than being rebuilt.
++     * Device IDs match CMPUNLOCK_DEVID_* in cmpunlock.h; they are repeated
++     * here because kernel-open sources cannot include RM headers.
++     */
++    if (nv->pci_info.device_id == 0x20C2 || nv->pci_info.device_id == 0x2082)
++    {
++        nv->flags |= NV_FLAG_PERSISTENT_SW_STATE;
++    }
++
+     /* Generate and cache the UUID for future callers */
+     (void)rm_get_gpu_uuid_raw(sp, nv);
+ 

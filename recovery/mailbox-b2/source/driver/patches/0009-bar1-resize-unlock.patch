@@ -1,0 +1,116 @@
+--- a/kernel-open/nvidia/nv-pci.c
++++ b/kernel-open/nvidia/nv-pci.c
+@@ -337,6 +337,90 @@
+ #endif
+ }
+ 
++/*
++ * CMP 170HX: program the XVE BAR1 resize control registers so that the
++ * PCIe REBAR capability advertises sizes up to 64 GB.  Must run before
++ * nv_resize_pcie_bars() which reads pci_rebar_get_possible_sizes().
++ *
++ * The GA100 silicon supports BAR1 up to 512 GB (NV_XVE_RESIZE_BAR1_CTRL
++ * BAR_SIZE_MAX = 0x13), but the CMP VBIOS fuses only 64 MB.  Two CYA
++ * registers override this:
++ *
++ *   NV_XVE_CYA_RESIZE_BAR1 (PCFG + 0x724):
++ *     bits [4:0] = SIZE  (log2 of megabytes, 16 = 64 GB)
++ *     bit  5     = WR_EN (must be set)
++ *
++ *   NV_XVE_BAR1_CONFIG (PCFG + 0xDCC):
++ *     bits [3:0] = SIZE  (= CYA.SIZE - 6)
++ *     bit  31    = OVERWRITE (must be set)
++ *
++ * After writing these, the REBAR Capability register (PCFG + 0xBBC)
++ * reflects sizes 64 MB through 64 GB, and nv_resize_pcie_bars() picks
++ * the largest one the kernel can accommodate.
++ *
++ * The register writes are always safe — they only change what REBAR
++ * advertises as *possible*.  This function also forces
++ * NVreg_EnableResizableBar = 1 so nv_resize_pcie_bars() picks up the
++ * unlocked sizes automatically.  The resize has a built-in fallback:
++ * if the requested size cannot be allocated (missing pci=realloc, not
++ * enough MMIO space, etc.), it steps down to smaller sizes until it
++ * reaches the original 64 MB, so the GPU always comes up.
++ *
++ * Device IDs match CMPUNLOCK_DEVID_* in cmpunlock.h; they are repeated
++ * here because kernel-open sources cannot include RM headers.
++ */
++static void nv_cmp_unlock_bar1_resize(struct pci_dev *pci_dev)
++{
++#if defined(NV_PCI_REBAR_GET_POSSIBLE_SIZES_PRESENT)
++    void __iomem *pcfg;
++    u32 cya, cfg, cap;
++    resource_size_t bar0_start;
++
++    if (pci_dev->device != 0x20C2 && pci_dev->device != 0x2082)
++        return;
++
++    bar0_start = pci_resource_start(pci_dev, 0);
++    if (!bar0_start)
++        return;
++
++    /* Map the XVE / PCFG register page (BAR0 + 0x88000, 4 KB). */
++    pcfg = ioremap(bar0_start + 0x88000, 0x1000);
++    if (!pcfg) {
++        nv_printf(NV_DBG_ERRORS,
++            "NVRM: CMP BAR1 resize: failed to map XVE registers\n");
++        return;
++    }
++
++    cya = readl(pcfg + 0x724);   /* NV_XVE_CYA_RESIZE_BAR1 */
++    cfg = readl(pcfg + 0xDCC);   /* NV_XVE_BAR1_CONFIG      */
++    cap = readl(pcfg + 0xBBC);   /* REBAR Cap               */
++    nv_printf(NV_DBG_ERRORS,
++        "NVRM: CMP BAR1: before CYA=0x%08x CFG=0x%08x CAP=0x%08x\n",
++        cya, cfg, cap);
++
++    writel(0x30,         pcfg + 0x724);   /* SIZE=16 (64 GB), WR_EN */
++    writel(0x8000000A,   pcfg + 0xDCC);   /* OVERWRITE, SIZE=10     */
++
++    cya = readl(pcfg + 0x724);
++    cfg = readl(pcfg + 0xDCC);
++    cap = readl(pcfg + 0xBBC);
++    nv_printf(NV_DBG_ERRORS,
++        "NVRM: CMP BAR1: after  CYA=0x%08x CFG=0x%08x CAP=0x%08x\n",
++        cya, cfg, cap);
++
++    iounmap(pcfg);
++
++    /*
++     * Force resizable BAR on for CMP so nv_resize_pcie_bars() actually
++     * picks up the sizes we just advertised.  Safe because the resize
++     * function steps down gracefully on allocation failure.
++     */
++    NVreg_EnableResizableBar = 1;
++    nv_printf(NV_DBG_ERRORS,
++        "NVRM: CMP BAR1: resize enabled, will attempt up to 64 GB\n");
++#endif
++}
++
+ static int nv_resize_pcie_bars(struct pci_dev *pci_dev) {
+ #if defined(NV_PCI_REBAR_GET_POSSIBLE_SIZES_PRESENT)
+     u16 cmd;
+@@ -2087,12 +2171,22 @@
+         !nv_pci_validate_bars(pci_dev, /* only_bar0 = */ NV_FALSE))
+         goto err_zero_dev;
+ 
++    nv_cmp_unlock_bar1_resize(pci_dev);
++
+     if (nv_resize_pcie_bars(pci_dev)) {
+         nv_printf(NV_DBG_ERRORS,
+             "NVRM: Fatal Error while attempting to resize PCIe BARs.\n");
+         goto err_zero_dev;
+     }
+ 
++    /* Log final BAR1 size after resize attempt (CMP only). */
++    if (pci_dev->device == 0x20C2 || pci_dev->device == 0x2082) {
++        resource_size_t bar1_len = pci_resource_len(pci_dev, NV_GPU_BAR1);
++        nv_printf(NV_DBG_ERRORS,
++            "NVRM: CMP BAR1: final size = %llu MB\n",
++            (unsigned long long)(bar1_len >> 20));
++    }
++
+     nvl->all_mappings_revoked = NV_TRUE;
+     nvl->safe_to_mmap = NV_TRUE;
+     nvl->gpu_wakeup_callback_needed = NV_TRUE;

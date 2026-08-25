@@ -1,0 +1,63 @@
+--- a/src/nvidia/src/kernel/gpu/mem_mgr/mem_mgr.c
++++ b/src/nvidia/src/kernel/gpu/mem_mgr/mem_mgr.c
+@@ -51,6 +51,7 @@
+ #include "class/cl0005.h" // NV01_EVENT_KERNEL_CALLBACK_EX
+ #include "os/os.h"
+ #include "gpu/gsp/kernel_gsp.h"
++#include "gpu/cmpunlock/cmpunlock.h"
+ #include "gpu/conf_compute/conf_compute.h"
+ #include "gpu/mem_mgr/mem_mapper.h"
+ #include "platform/sli/sli.h"
+@@ -4138,7 +4139,8 @@
+ 
+     if (!bFifoLite && !RMCFG_FEATURE_PLATFORM_GSP && bVirtualMode &&
+         IS_SILICON(pGpu) && !pMemorySystemConfig->bDisableCompbitBacking &&
+-        (pMemorySystemConfig->bUseRawModeComptaglineAllocation || pMemorySystemConfig->bOneToOneComptagLineAllocation))
++        (pMemorySystemConfig->bUseRawModeComptaglineAllocation || pMemorySystemConfig->bOneToOneComptagLineAllocation) &&
++        !cmpUnlockIsTarget(pGpu))
+     {
+         // Turn on virtual mode to enable compressed allocation access
+         ceUtilsParams.flags |= DRF_DEF(0050_CEUTILS, _FLAGS, _VIRTUAL_MODE, _TRUE);
+--- a/src/nvidia/src/kernel/gpu/mem_mgr/arch/turing/mem_mgr_tu102.c
++++ b/src/nvidia/src/kernel/gpu/mem_mgr/arch/turing/mem_mgr_tu102.c
+@@ -33,6 +33,7 @@
+ #include "published/turing/tu102/kind_macros.h"
+ #include "published/turing/tu102/dev_fb_addendum.h"
+ #include "nvRmReg.h"
++#include "gpu/cmpunlock/cmpunlock.h"
+ 
+ /*!
+  * @brief Determine the kind of uncompressed PTE for a given allocation.
+@@ -573,6 +574,13 @@
+     if (pteKind == NULL)
+         return;
+ 
++    // PLC compression is unreliable on the unlocked geometry
++    if (cmpUnlockIsTarget(ENG_GET_GPU(pMemoryManager)))
++    {
++        *pteKind = NV_MMU_PTE_KIND_GENERIC_MEMORY;
++        return;
++    }
++
+     *pteKind = NV_MMU_PTE_KIND_GENERIC_MEMORY_COMPRESSIBLE_DISABLE_PLC;
+ }
+ 
+--- a/src/nvidia/src/kernel/gpu/mem_mgr/mem_scrub.c
++++ b/src/nvidia/src/kernel/gpu/mem_mgr/mem_scrub.c
+@@ -64,6 +64,7 @@
+ #include "class/clc9b5.h"      // BLACKWELL_DMA_COPY_A
+ 
+ #include "class/clcab5.h"      // BLACKWELL_DMA_COPY_B
++#include "gpu/cmpunlock/cmpunlock.h"
+ 
+ static NvU64     _scrubCheckProgress(OBJMEMSCRUB *pScrubber);
+ static NvU64     _searchScrubList(OBJMEMSCRUB *pScrubber, RmPhysAddr base, NvU64 size);
+@@ -149,7 +150,7 @@
+         NV_PRINTF(LEVEL_INFO, "Starting to init CeUtils for scrubber.\n");
+         NV0050_ALLOCATION_PARAMETERS ceUtilsAllocParams = {0};
+ 
+-        if (memmgrUseVasForCeMemoryOps(pMemoryManager))
++        if (memmgrUseVasForCeMemoryOps(pMemoryManager) && !cmpUnlockIsTarget(pGpu))
+         {
+             ceUtilsAllocParams.flags = DRF_DEF(0050, _CEUTILS_FLAGS, _VIRTUAL_MODE, _TRUE);
+         }

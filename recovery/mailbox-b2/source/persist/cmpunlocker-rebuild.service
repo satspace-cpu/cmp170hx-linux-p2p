@@ -1,0 +1,24 @@
+[Unit]
+Description=cmpunlocker: ensure patched NVIDIA modules exist for the running kernel
+Documentation=https://github.com/asm64-hooligan/cmpunlocker
+# /var/lib/cmpunlocker holds the build payload, so the filesystems have to be up.
+After=local-fs.target
+# Blocks boot from completing until the patched driver is in place. A CMP that
+# comes up on the stock driver silently runs at 8 GB, which is worse than a
+# one-off slow boot.
+Before=multi-user.target
+Before=nvidia-persistenced.service
+ConditionPathExists=/usr/lib/cmpunlocker/boot-check.sh
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/lib/cmpunlocker/boot-check.sh
+# A full rebuild is ~2-3 min on a typical rig; allow for much slower hardware.
+TimeoutStartSec=1800
+# The operator needs to see why the boot is taking minutes.
+StandardOutput=journal+console
+StandardError=journal+console
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,19 @@
+#
+# cmpunlocker - Arch Linux pacman hook.
+#
+# Installed as /etc/pacman.d/hooks/95-cmpunlocker.hook. Fires whenever a kernel
+# package drops a new vmlinuz, which is the Arch equivalent of the kernel-install
+# and postinst.d hooks used elsewhere.
+#
+[Trigger]
+Type = Path
+Operation = Install
+Operation = Upgrade
+Operation = Remove
+Target = usr/lib/modules/*/vmlinuz
+
+[Action]
+Description = cmpunlocker: rebuilding patched NVIDIA modules
+When = PostTransaction
+Exec = /usr/lib/cmpunlocker/pacman-trigger.sh
+NeedsTargets

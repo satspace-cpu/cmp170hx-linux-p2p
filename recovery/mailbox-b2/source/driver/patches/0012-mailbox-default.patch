@@ -1,0 +1,12 @@
+--- a/src/nvidia/src/kernel/gpu/bif/kernel_bif.c
++++ b/src/nvidia/src/kernel/gpu/bif/kernel_bif.c
+@@ -1147,8 +1147,7 @@ _kbifInitRegistryOverrides
+ 
+     // cmpunlocker P2P: force BAR1 P2P as the default connection type on
+     // CMP 170HX/220HX instead of NV_REG_STR_RM_PCIEP2P_TYPE_DEFAULT
+-    pKernelBif->pcieP2PType = bCmp170hx ? NV_REG_STR_RM_PCIEP2P_TYPE_BAR1
+-                                         : NV_REG_STR_RM_PCIEP2P_TYPE_DEFAULT;
++    pKernelBif->pcieP2PType = NV_REG_STR_RM_PCIEP2P_TYPE_DEFAULT;
+     if (osReadRegistryDword(pGpu, NV_REG_STR_RM_PCIEP2P_TYPE, &data32) == NV_OK)
+     {
+         pKernelBif->pcieP2PType = data32;

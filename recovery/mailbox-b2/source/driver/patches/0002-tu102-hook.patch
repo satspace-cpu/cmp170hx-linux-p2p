@@ -1,0 +1,20 @@
+--- a/src/nvidia/src/kernel/gpu/gsp/arch/turing/kernel_gsp_tu102.c
++++ b/src/nvidia/src/kernel/gpu/gsp/arch/turing/kernel_gsp_tu102.c
+@@ -57,6 +57,8 @@
+ #include "g_all_dcl_pb.h"
+ #include "lib/protobuf/prb.h"
+ 
++#include "gpu/cmpunlock/cmpunlock.h"
++
+ void
+ kgspConfigureFalcon_TU102
+ (
+@@ -571,6 +573,8 @@
+         return status;
+     }
+ 
++    cmpUnlockPostBooterLoad(pGpu, pKernelGsp);
++
+     // Send init RPCs necessary for GSP-RM booting, before creating OBJGPU.
+     // Skips for suspend/resume as GSP saves/restores context
+     if (bootMode == KGSP_BOOT_MODE_NORMAL)

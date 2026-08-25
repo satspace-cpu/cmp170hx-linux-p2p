@@ -1,0 +1,69 @@
+Local instrumentation (not upstream): show which BAR1-P2P gate rejects.
+
+With the amoghmunikote P2P patch applied, a 64GB BAR1, RMForceStaticBar1=1 and
+RMPcieP2PType=1, connType still comes back 1 (PCIE_PROPRIETARY) instead of 2
+(PCIE_BAR1). kbusIsPcieBar1P2PMappingSupported_GH100 has exactly four gates and
+all four appear to pass on inspection, so one of the inputs is not what it looks
+like. This dumps every input on entry and tags each rejection point.
+
+Note kbusIsStaticBar1Enabled has no success print of its own, so this is also the
+only way to confirm whether static BAR1 actually came up.
+
+--- g/src/nvidia/src/kernel/gpu/bus/arch/hopper/kern_bus_gh100.c	2026-08-07 17:32:37.258928509 -0700
++++ h/src/nvidia/src/kernel/gpu/bus/arch/hopper/kern_bus_gh100.c	2026-08-07 17:33:16.125807305 -0700
+@@ -1458,16 +1458,35 @@
+     NvU32      gpuInst1   = gpuGetInstance(pGpu1);
+     KernelBif *pKernelBif = GPU_GET_KERNEL_BIF(pGpu0);
+ 
++    //
++    // cmpunlocker instrumentation: this function has four gates and connType kept
++    // coming back PCIE_PROPRIETARY even though all four appeared to pass on
++    // inspection. Dump every input so the failing gate is unambiguous.
++    //
++    NV_PRINTF(LEVEL_ERROR,
++              "CMPUNLOCK_BAR1P2P: gpu%u->gpu%u pcieP2PType=%u (1=BAR1) "
++              "byDefaultProp=%u loopback=%u staticBar1_0=%u staticBar1_1=%u "
++              "peerMask0=0x%x peerMask1=0x%x\n",
++              gpuInst0, gpuInst1, pKernelBif->pcieP2PType,
++              (NvU32)pKernelBus0->getProperty(pKernelBus0, PDB_PROP_KBUS_SUPPORT_BAR1_P2P_BY_DEFAULT),
++              (NvU32)(pGpu0 == pGpu1),
++              (NvU32)kbusIsStaticBar1Enabled(pGpu0, pKernelBus0),
++              (NvU32)kbusIsStaticBar1Enabled(pGpu1, pKernelBus1),
++              pKernelBus0->p2pPcie.peerNumberMask[gpuInst1],
++              pKernelBus1->p2pPcie.peerNumberMask[gpuInst0]);
++
+     // Only support if available by default, or if forced by regkey.
+     if ((pKernelBif->pcieP2PType != NV_REG_STR_RM_PCIEP2P_TYPE_BAR1) &&
+         !pKernelBus0->getProperty(pKernelBus0, PDB_PROP_KBUS_SUPPORT_BAR1_P2P_BY_DEFAULT))
+     {
++        NV_PRINTF(LEVEL_ERROR, "CMPUNLOCK_BAR1P2P: REJECT gate1 pcieP2PType\n");
+         return NV_FALSE;
+     }
+ 
+     // Not loopback support
+     if (pGpu0 == pGpu1)
+     {
++        NV_PRINTF(LEVEL_ERROR, "CMPUNLOCK_BAR1P2P: REJECT gate2 loopback\n");
+         return NV_FALSE;
+     }
+ 
+@@ -1475,6 +1494,7 @@
+     if (!kbusIsStaticBar1Enabled(pGpu0, pKernelBus0) ||
+         !kbusIsStaticBar1Enabled(pGpu1, pKernelBus1))
+     {
++        NV_PRINTF(LEVEL_ERROR, "CMPUNLOCK_BAR1P2P: REJECT gate3 static BAR1 not enabled\n");
+         return NV_FALSE;
+     }
+ 
+@@ -1487,9 +1507,11 @@
+     if ((pKernelBus0->p2pPcie.peerNumberMask[gpuInst1] != 0) ||
+         (pKernelBus1->p2pPcie.peerNumberMask[gpuInst0] != 0))
+     {
++        NV_PRINTF(LEVEL_ERROR, "CMPUNLOCK_BAR1P2P: REJECT gate4 existing mailbox peer\n");
+         return NV_FALSE;
+     }
+ 
++    NV_PRINTF(LEVEL_ERROR, "CMPUNLOCK_BAR1P2P: ACCEPTED - BAR1 P2P supported\n");
+     return NV_TRUE;
+ }
+ 
