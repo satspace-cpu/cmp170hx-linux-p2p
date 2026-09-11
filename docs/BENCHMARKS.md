@@ -2,6 +2,27 @@
 
 All numbers below are from the same dual-CMP 170HX system unless otherwise noted.
 
+> **P2P correction, 2026-09-11:** older Mailbox B2 P2P figures in this file
+> are historical and invalid as proof of P2P. A later content test showed that
+> the mailbox path did not update peer VRAM. The current verified result is
+> documented in [Static BAR1 P2P](STATIC-BAR1-P2P.md).
+
+## Current verified Static BAR1 P2P (GPU1 `82:00.0` ↔ GPU2 `83:00.0`)
+
+| Metric | Before Static BAR1 | Enabled Static BAR1 |
+|---|---:|---:|
+| CUDA P2P status | `GNS` | `OK` |
+| One-way | 5.77–5.88 GB/s fallback | **5.30 GB/s direct P2P** |
+| Bidirectional | 8.07–8.23 GB/s fallback | **10.27 GB/s direct P2P** |
+| GPU latency | 15.7–18.9 µs | **1.69–1.71 µs** |
+| `cuMemcpyPeer`, both directions | unavailable | **PASS** |
+| SM remote read/write, both directions | unavailable | **PASS** |
+
+Tested with NVIDIA Open Kernel Modules 610.57.04 on
+`7.0.12-cmp170bar1test`, Gen2 x16, 64 GiB BAR1 per GPU, IOMMU off and
+NDIV 70. Raw outputs: [correctness](../results/static-bar1-610.57.04-7.0.12-correctness.txt)
+and [CUDA sample](../results/static-bar1-610.57.04-7.0.12-p2pBandwidthLatencyTest.txt).
+
 ## Hardware and software
 
 ```text
@@ -75,7 +96,7 @@ tg128 =   26.97 t/s
 
 The second CMP improved prompt processing by about 61% and single-stream token generation by about 9% on this workload. For `llama-bench`, the correct two-GPU tensor-split syntax is `-ts 50/50`; `50,50` requests two separate benchmark parameter values.
 
-## P2P summary table
+## Historical Mailbox measurements — invalidated by content testing
 
 | Stage | P2P state | 0→1 GB/s | 1→0 GB/s | Bidirectional 0→1 | Bidirectional 1→0 | GPU latency 0→1 | GPU latency 1→0 |
 |---|---|---:|---:|---:|---:|---:|---:|
@@ -86,7 +107,7 @@ The second CMP improved prompt processing by about 61% and single-stream token g
 | Final config, IOMMU off | Disabled | 5.88 | 5.94 | 8.06 | 8.32 | 62.67 µs | 17.57 µs |
 | Final config, IOMMU off | **Enabled** | **6.46** | **6.69** | **12.90** | **13.18** | **1.65 µs** | **1.59 µs** |
 
-## Bayley BAR1 vs restored Mailbox B2 (kernel 7.0.12)
+## Historical Bayley BAR1 vs restored Mailbox B2 comparison — Mailbox B2 invalidated
 
 After the original system disk was lost, the driver and the custom
 `7.0.12-cmp170bar1test` kernel were rebuilt. The kernel preserves a full 64 GB

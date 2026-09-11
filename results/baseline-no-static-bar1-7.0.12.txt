@@ -1,0 +1,25 @@
+[P2P (Peer-to-Peer) GPU Bandwidth Latency Test]
+Device: 0, NVIDIA Graphics Device, pciBusID: 82, pciDeviceID: 0, pciDomainID:0
+Device: 1, NVIDIA Graphics Device, pciBusID: 83, pciDeviceID: 0, pciDomainID:0
+Device=0 CANNOT Access Peer Device=1
+Device=1 CANNOT Access Peer Device=0
+
+Unidirectional P2P=Disabled Bandwidth Matrix (GB/s)
+   D\D     0      1
+     0 1671.12   5.88
+     1   5.77 1713.27
+
+Bidirectional P2P=Disabled Bandwidth Matrix (GB/s)
+   D\D     0      1
+     0 1706.72   8.07
+     1   8.23 1748.74
+
+P2P=Disabled Latency Matrix (us)
+   GPU     0      1
+     0   2.17  50.63
+     1  18.32   2.32
+
+P2P=Enabled Latency (P2P Writes) Matrix (us)
+   GPU     0      1
+     0   2.16  15.70
+     1  18.92   2.31

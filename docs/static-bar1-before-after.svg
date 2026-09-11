@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="430" viewBox="0 0 900 430" role="img" aria-labelledby="title desc">
+  <title id="title">CMP 170HX GPU1 to GPU2 before and after Static BAR1</title>
+  <desc id="desc">Bandwidth and latency comparison for host fallback and verified Static BAR1 P2P.</desc>
+  <rect width="900" height="430" fill="#ffffff"/>
+  <text x="45" y="42" font-family="Arial, sans-serif" font-size="24" font-weight="700" fill="#111827">CMP 170HX GPU1 ↔ GPU2 — Static BAR1 result</text>
+  <text x="45" y="67" font-family="Arial, sans-serif" font-size="14" fill="#4b5563">Gen2 x16 · 64 GiB BAR1 per GPU · CUDA sample, 2026-09-11</text>
+  <text x="45" y="108" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="#111827">Bandwidth (GB/s)</text>
+  <line x1="260" y1="125" x2="830" y2="125" stroke="#d1d5db"/>
+  <text x="45" y="163" font-family="Arial, sans-serif" font-size="15" fill="#111827">One-way</text>
+  <rect x="260" y="141" width="335" height="23" fill="#9ca3af"/><text x="605" y="159" font-family="Arial, sans-serif" font-size="14" fill="#111827">5.88 fallback</text>
+  <rect x="260" y="171" width="302" height="23" fill="#2563eb"/><text x="572" y="189" font-family="Arial, sans-serif" font-size="14" fill="#111827">5.30 P2P</text>
+  <text x="45" y="232" font-family="Arial, sans-serif" font-size="15" fill="#111827">Bidirectional</text>
+  <rect x="260" y="210" width="471" height="23" fill="#9ca3af"/><text x="741" y="228" font-family="Arial, sans-serif" font-size="14" fill="#111827">8.23 fallback</text>
+  <rect x="260" y="240" width="570" height="23" fill="#2563eb"/><text x="840" y="258" font-family="Arial, sans-serif" font-size="14" text-anchor="end" fill="#111827">10.27 P2P</text>
+  <text x="45" y="311" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="#111827">GPU-to-GPU latency (µs, lower is better)</text>
+  <rect x="260" y="325" width="510" height="23" fill="#9ca3af"/><text x="780" y="343" font-family="Arial, sans-serif" font-size="14" fill="#111827">18.9 fallback</text>
+  <rect x="260" y="355" width="46" height="23" fill="#16a34a"/><text x="316" y="373" font-family="Arial, sans-serif" font-size="14" fill="#111827">1.71 P2P</text>
+  <rect x="45" y="398" width="14" height="14" fill="#9ca3af"/><text x="68" y="410" font-family="Arial, sans-serif" font-size="13" fill="#4b5563">CUDA fallback / host path</text>
+  <rect x="290" y="398" width="14" height="14" fill="#2563eb"/><text x="313" y="410" font-family="Arial, sans-serif" font-size="13" fill="#4b5563">Static BAR1 direct P2P</text>
+</svg>

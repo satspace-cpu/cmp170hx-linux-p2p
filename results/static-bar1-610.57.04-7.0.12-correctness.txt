@@ -1,0 +1,17 @@
+CUDA GPU0: NVIDIA Graphics Device @ 0000:82:00.0
+CUDA GPU1: NVIDIA Graphics Device @ 0000:83:00.0
+CAPABILITY GPU0->GPU1=1 GPU1->GPU0=1
+BASELINE GPU0->GPU1 host-staged=3.16 GB/s
+BASELINE GPU1->GPU0 host-staged=3.16 GB/s
+PASS cuMemcpyPeer GPU0->GPU1: 1048576 words
+PASS cuMemcpyPeer GPU1->GPU0: 1048576 words
+PASS SM remote read GPU0<-GPU1: 1048576 words
+PASS SM remote read GPU1<-GPU0: 1048576 words
+PASS SM remote write GPU0->GPU1: 1048576 words
+PASS SM remote write GPU1->GPU0: 1048576 words
+BANDWIDTH GPU0->GPU1 peer=5.29 GB/s
+BANDWIDTH GPU1->GPU0 peer=5.29 GB/s
+BANDWIDTH GPU0<->GPU1 peer-bidirectional=10.27 GB/s
+LATENCY GPU0->GPU1 peer=7.35 us
+LATENCY GPU1->GPU0 peer=7.53 us
+RESULT correctness=PASS

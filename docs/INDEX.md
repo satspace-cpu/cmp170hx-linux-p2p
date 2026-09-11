@@ -7,9 +7,9 @@ This repository is intended to be a practical map for CMP 170HX owners, from a n
 1. **Unlock memory and compute** — [`UNLOCK.md`](UNLOCK.md)
 2. **PCIe x4 → x16 hardware modification** — [`PCIE-X16-HARDWARE-MOD.md`](PCIE-X16-HARDWARE-MOD.md) / [Русский](PCIE-X16-HARDWARE-MOD.ru.md)
 3. **Tune and validate with 170tune** — [`170TUNE.md`](170TUNE.md)
-4. **Install and verify the tested P2P path** — [`INSTALL.md`](INSTALL.md)
-5. **Understand the mailbox/default P2P fix** — [`P2P-EXPLAINED.md`](P2P-EXPLAINED.md)
-6. **Compare alternative P2P implementations** — [`P2P-ALTERNATIVE-PATHS.md`](P2P-ALTERNATIVE-PATHS.md) / [Русский](P2P-ALTERNATIVE-PATHS.ru.md)
+4. **Install and verify Static BAR1 P2P** — [`STATIC-BAR1-P2P.md`](STATIC-BAR1-P2P.md) / [Русский](STATIC-BAR1-P2P.ru.md)
+5. **Understand the historical mailbox investigation** — [`P2P-EXPLAINED.md`](P2P-EXPLAINED.md)
+6. **Compare P2P implementations and limits** — [`P2P-ALTERNATIVE-PATHS.md`](P2P-ALTERNATIVE-PATHS.md) / [Русский](P2P-ALTERNATIVE-PATHS.ru.md)
 7. **See measured results** — [`BENCHMARKS.md`](BENCHMARKS.md)
 8. **Troubleshoot** — [`TROUBLESHOOTING.md`](TROUBLESHOOTING.md)
 
@@ -21,23 +21,27 @@ Current public status: Gen2 is working; Gen3 reverse engineering is active but w
 
 ## P2P implementations tracked here
 
-### DEFAULT / mailbox path
+### Static BAR1 path — currently verified
 
-Validated in this repository on 2× CMP 170HX at Gen2 x16:
+Verified on this repository's GPU1↔GPU2 Gen2 x16 pair with a content check:
 
 ```text
-6.46–6.69 GB/s one-way
-12.90–13.18 GB/s bidirectional
-~1.6 us GPU latency
+5.30 GB/s each way
+10.27 GB/s bidirectional
+1.69–1.71 us GPU latency
 ```
 
-### Static BAR1 path
+See [`STATIC-BAR1-P2P.md`](STATIC-BAR1-P2P.md) for raw output and limits.
+
+### Mailbox/default path — historical, invalidated
 
 Alternative implementation maintained in:
 
 - <https://github.com/bayley/cmpunlocker>
 
-It uses a large static BAR1, BAR1-specific driver patches and host-kernel BAR/MMIO patches. Published upstream results include about 1.68 GB/s each way at Gen2 x4 and larger multi-GPU topologies.
+The old Mailbox B2 result is retained for investigation/recovery only. It is
+not evidence of working P2P: later content tests showed peer VRAM was not
+updated. The practical path is Static BAR1 above.
 
 See [`P2P-ALTERNATIVE-PATHS.md`](P2P-ALTERNATIVE-PATHS.md) before choosing a protocol path.
 

@@ -1,12 +1,16 @@
-# CMP 170HX P2P: two working approaches
+# CMP 170HX P2P: current verified path and historical mailbox path
 
 This project tracks more than one way to obtain real GPU-to-GPU traffic on CMP 170HX. The goal is not to declare one implementation universally correct, but to preserve reproducible paths, their requirements, and measured results.
 
-> **Important:** do not mix the two protocol choices blindly. The mailbox/default path and the BAR1 path intentionally select different NVIDIA P2P mechanisms.
+> **Correction, 2026-09-11:** content testing invalidated the earlier Mailbox
+> B2 result. It can advertise capability and produce sample throughput without
+> changing peer VRAM. The only current content-verified path in this repository
+> is [Static BAR1](STATIC-BAR1-P2P.md). Do not use the mailbox path below as a
+> working P2P recipe.
 
 ## Quick comparison
 
-| Item | Path A — DEFAULT / mailbox path (this project) | Path B — static BAR1 path (`bayley/cmpunlocker`) |
+| Item | Path A — DEFAULT / mailbox (historical, invalidated) | Path B — Static BAR1 (current) |
 |---|---|---|
 | Tested GPU | 2× CMP 170HX 64 GB | CMP 170HX, 4-GPU and later 8-GPU systems |
 | Driver base | nvidia-open 610.43.03 | nvidia-open 610.43.03 / 610.43.02 |
@@ -15,16 +19,16 @@ This project tracks more than one way to obtain real GPU-to-GPU traffic on CMP 1
 | Patched host kernel required | No for our tested path | Yes for normal-boot 64 GB BAR1 on the documented Bayley setup |
 | IOMMU | Fully disabled on our working bare-metal test | Bayley documents its own IOMMU/host setup; verify on your platform |
 | ACS | Redirect disabled on relevant root ports | Important for performance; Bayley measured a same-switch gain after disabling redirects |
-| Measured one-way | **6.46 / 6.69 GB/s** at Gen2 x16 | **~1.68 GB/s** at Gen2 x4 |
-| Measured bidirectional | **12.90–13.18 GB/s** | topology/test dependent |
-| GPU latency | **~1.59–1.65 µs** | see upstream measurements |
+| Measured one-way | historical sample only; not valid | **5.30 GB/s** at Gen2 x16 on this host |
+| Measured bidirectional | historical sample only; not valid | **10.27 GB/s** on this host |
+| GPU latency | historical sample only; not valid | **1.69–1.71 µs** on this host |
 | Complexity | Lower if IOMMU-off bare metal is acceptable | Higher: large BAR1, kernel/MMIO sizing, BAR1-specific driver patches |
 
 The bandwidth values are not directly comparable because the link widths differ: our cards are physically modified to Gen2 x16, while the published Bayley result quoted above is Gen2 x4.
 
 ---
 
-# Path A — DEFAULT / mailbox path
+# Path A — DEFAULT / mailbox path (historical, do not deploy)
 
 This is the path developed and measured in this repository.
 
@@ -102,7 +106,7 @@ This is the strongest evidence for this path: real bandwidth changed by more tha
 
 ---
 
-# Path B — static BAR1 P2P (`bayley/cmpunlocker`)
+# Path B — Static BAR1 P2P (current verified path)
 
 Upstream:
 

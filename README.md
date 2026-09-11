@@ -8,7 +8,7 @@ A beginner-friendly end-to-end guide for NVIDIA CMP 170HX owners.
 
 **stock CMP 170HX → memory/compute unlock → 170tune validation → physical PCIe x4→x16 hardware mod → PCIe Gen2 software unlock → working CUDA P2P → multi-GPU LLM testing**
 
-> **Latest restored Mailbox B2 result on our 2× CMP 170HX 64 GB system:** 6.69–6.70 GB/s one-way P2P, 13.37–13.40 GB/s bidirectional and 1.54–1.62 µs GPU-to-GPU latency over PCIe Gen2 x16. Bayley static BAR1 measured 5.30 / 10.28 GB/s and 1.68–1.73 µs on the same host.
+> **Current verified P2P result:** Static BAR1 on GPU1 `82:00.0` ↔ GPU2 `83:00.0` achieved **5.30 GB/s one-way**, **10.27 GB/s bidirectional** and **1.69–1.71 µs** over PCIe Gen2 x16. CUDA peer copies plus direct SM remote reads and writes all passed. [Full English report](docs/STATIC-BAR1-P2P.md) · [Русский отчёт](docs/STATIC-BAR1-P2P.ru.md)
 
 ---
 
@@ -106,32 +106,26 @@ Current public research has Gen2 working. Gen3 remains an open research problem.
 
 # Stage 5 — Enable and verify CUDA P2P
 
-Our tested P2P path builds on the experimental `aikitoria/open-gpu-kernel-modules` P2P changes plus our CMP/GA100 mailbox correction:
-
-- https://github.com/aikitoria/open-gpu-kernel-modules/tree/610.43.03-p2p
-- [Mailbox fix](patches/p2p-cmp170-mailbox-fix.patch)
-- [P2P installation](docs/INSTALL.md)
-- [How the P2P fix works](docs/P2P-EXPLAINED.md)
-
-Alternative BAR1-based P2P work is also documented:
-
-- [P2P alternative paths](docs/P2P-ALTERNATIVE-PATHS.md)
-- [Русский — альтернативные P2P пути](docs/P2P-ALTERNATIVE-PATHS.ru.md)
-
-Our final CUDA test on Gen2 x16:
+The current verified path is **Static BAR1**. It maps the remote GPU framebuffer
+through the remote GPU's 64 GiB BAR1 window; it does not use the old mailbox
+data path. On the current Gen2 x16 host it produced:
 
 ```text
-GPU0 -> GPU1: 6.46 GB/s
-GPU1 -> GPU0: 6.69 GB/s
-Bidirectional: 12.90–13.18 GB/s
-GPU latency: 1.59–1.65 us
+GPU1 -> GPU2: 5.30 GB/s
+GPU2 -> GPU1: 5.30 GB/s
+Bidirectional: 10.27 GB/s
+GPU latency: 1.69–1.71 us
 ```
 
-After rebuilding the lost system disk, the restored Mailbox B2 path improved
-this further to **6.69–6.70 GB/s one-way**, **13.37–13.40 GB/s bidirectional**
-and **1.54–1.62 µs**. On the same Gen2 x16 setup, Bayley static BAR1 produced
-5.30 GB/s, 10.28 GB/s and 1.68–1.73 µs. Full reproducible source and rollback
-instructions: [recovery/mailbox-b2](recovery/mailbox-b2/).
+The result is verified by both CUDA sample output and a separate content test:
+`cuMemcpyPeer`, SM remote reads and SM remote writes passed in both directions.
+Read the complete procedure, topology limits, chart and raw output in
+[Static BAR1 P2P](docs/STATIC-BAR1-P2P.md).
+
+> **Mailbox B2 correction:** previously published 6.69–6.70 GB/s Mailbox B2
+> figures were a false positive. Later content testing found that peer VRAM was
+> not modified and NCCL could hang. Do not use the mailbox path as evidence of
+> real P2P; it is retained only as a historical recovery artifact.
 
 Full results: [docs/BENCHMARKS.md](docs/BENCHMARKS.md)
 
@@ -162,7 +156,8 @@ Full results: [docs/BENCHMARKS.md](docs/BENCHMARKS.md)
 - **[PCIe x4 → x16 physical soldering guide](docs/PCIE-X16-HARDWARE-MOD.md)**
 - **[Русская инструкция x4 → x16](docs/PCIE-X16-HARDWARE-MOD.ru.md)**
 - [PCIe Gen3 research/status](docs/PCIE-GEN3-STATUS.md)
-- [P2P installation and verification](docs/INSTALL.md)
+- [Verified Static BAR1 P2P](docs/STATIC-BAR1-P2P.md)
+- [Проверенный Static BAR1 P2P](docs/STATIC-BAR1-P2P.ru.md)
 - [P2P alternative paths](docs/P2P-ALTERNATIVE-PATHS.md)
 - [How the P2P failure and fix work](docs/P2P-EXPLAINED.md)
 - [Benchmarks](docs/BENCHMARKS.md)
