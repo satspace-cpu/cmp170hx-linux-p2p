@@ -42,6 +42,39 @@
 GPU0 (`0000:05:00.0`) находится за другим NUMA/root path и остаётся `TNS`.
 Она намеренно не была видна CUDA-тестам.
 
+<a id="three-gpu-numa-root-complex"></a>
+## Три GPU: измеренное влияние NUMA и root complex
+
+В исходном доказательстве с двумя GPU GPU0 намеренно не была видна CUDA.
+14 сентября 2026 года тот же NVIDIA CUDA sample был повторён со всеми тремя
+картами. Поэтому этот хост даёт наглядное сравнение: GPU1↔GPU2 сохраняет
+проверенный прямой Static BAR1 peer path, а GPU0 использует обычный CUDA
+fallback, потому что находится за другим NUMA/root path.
+
+![Измеренное влияние NUMA/root path на скорость и latency](static-bar1-numa-three-gpu.svg)
+
+| Пара видимых CUDA GPU | Топология / capability | Результат enabled в одну сторону | Enabled bidirectional | Enabled GPU latency |
+|---|---|---:|---:|---:|
+| GPU1 `82:00.0` ↔ GPU2 `83:00.0` | Один NUMA/root path; Static BAR1 P2P `OK` | **5.30 GB/s** в каждую сторону | **10.26 GB/s** | **1.64 мкс** в каждую сторону |
+| GPU0 `05:00.0` ↔ GPU1 `82:00.0` | Другой NUMA/root path; `TNS`, CUDA fallback | 6.01 GB/s | 8.33 GB/s | 20.38 / 20.53 мкс |
+| GPU0 `05:00.0` ↔ GPU2 `83:00.0` | Другой NUMA/root path; `TNS`, CUDA fallback | 6.01 GB/s | 8.33 GB/s | 18.10 / 11.37 мкс |
+
+Все три CMP 170HX после прогона оставались Gen2 x16, с 64 GiB VRAM и 64 GiB
+BAR1; persistence mode включён. Новых NVIDIA Xid или PCIe AER ошибок после
+теста не появилось.
+
+Цифру fallback 6.01 GB/s нельзя считать P2P. CUDA прямо сообщила, что GPU0
+не может обращаться к обеим соседним картам, поэтому sample перешёл на обычную
+host-mediated copy procedure. У прямой пары one-way число немного меньше, но
+она выигрывает в важном режиме: 10.26 против 8.33 GB/s в обе стороны и примерно
+в 7–12 раз меньшая GPU latency. Предыдущий content-check доказывает, что эта
+пара действительно меняет удалённую VRAM; у fallback-пар такого peer mapping
+нет.
+
+Это практическое предупреждение и для третьей/четвёртой CMP: общий NUMA node
+сам по себе не гарантирует P2P. Для каждой новой направленной пары надо
+проверять root-complex/ACS path, `nvidia-smi topo -p2p` и content-test.
+
 ## Что меняет Static BAR1
 
 ```mermaid
@@ -101,6 +134,7 @@ MiB peer copy. NVIDIA CUDA sample независимо повторил 5.30 / 1
 - [Проверка содержимого и bandwidth](../results/static-bar1-610.57.04-7.0.12-correctness.txt)
 - [Полный вывод NVIDIA `p2pBandwidthLatencyTest`](../results/static-bar1-610.57.04-7.0.12-p2pBandwidthLatencyTest.txt)
 - [Baseline без Static BAR1](../results/baseline-no-static-bar1-7.0.12.txt)
+- [Трёх-GPU вывод `p2pBandwidthLatencyTest` для NUMA/root-complex](../results/static-bar1-three-gpu-numa-20260914-p2pBandwidthLatencyTest.txt)
 
 ## Важные ограничения
 

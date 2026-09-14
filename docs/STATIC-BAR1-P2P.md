@@ -41,6 +41,39 @@ bidirectional result and the latency show the practical improvement.
 GPU0 (`0000:05:00.0`) is on a different NUMA/root path and remained `TNS`.
 It was deliberately not made CUDA-visible for these tests.
 
+<a id="three-gpu-numa-root-complex"></a>
+## Three-GPU NUMA and root-complex measurement
+
+The initial two-GPU proof deliberately hid GPU0. On 2026-09-14 we repeated
+the NVIDIA CUDA sample with all three cards visible. This turns the same host
+into a useful topology comparison: GPU1↔GPU2 retains the verified Static BAR1
+peer path, while GPU0 uses the normal CUDA fallback because it is behind a
+different NUMA/root path.
+
+![Measured effect of NUMA/root path on bandwidth and latency](static-bar1-numa-three-gpu.svg)
+
+| Visible CUDA pair | Topology / capability | One-way enabled result | Bidirectional enabled result | Enabled GPU latency |
+|---|---|---:|---:|---:|
+| GPU1 `82:00.0` ↔ GPU2 `83:00.0` | Same NUMA/root path; Static BAR1 P2P `OK` | **5.30 GB/s** each direction | **10.26 GB/s** | **1.64 µs** each direction |
+| GPU0 `05:00.0` ↔ GPU1 `82:00.0` | Different NUMA/root path; `TNS`, CUDA fallback | 6.01 GB/s | 8.33 GB/s | 20.38 / 20.53 µs |
+| GPU0 `05:00.0` ↔ GPU2 `83:00.0` | Different NUMA/root path; `TNS`, CUDA fallback | 6.01 GB/s | 8.33 GB/s | 18.10 / 11.37 µs |
+
+All three CMP 170HX cards were still Gen2 x16 with 64 GiB VRAM and 64 GiB
+BAR1; persistence mode was enabled. No new NVIDIA Xid or PCIe AER error was
+reported after the run.
+
+The 6.01 GB/s fallback number must **not** be mistaken for P2P. CUDA explicitly
+reported that GPU0 could not access either peer, and the sample therefore used
+its normal host-mediated copy procedure. The direct pair has a slightly lower
+one-way figure, but wins where it matters: 10.26 versus 8.33 GB/s in both
+directions and roughly 7–12× lower GPU latency. The earlier content check
+proves that this pair really changes remote VRAM; the fallback pairs have no
+such peer mapping.
+
+This is also a practical warning for an added third or fourth CMP: a shared
+NUMA node alone is not a guarantee. Every new directed pair must be checked
+for its root-complex/ACS path, `nvidia-smi topo -p2p`, and a content test.
+
 ## What Static BAR1 changes
 
 ```mermaid
@@ -102,6 +135,7 @@ GB/s result.
 - [Correctness and bandwidth probe](../results/static-bar1-610.57.04-7.0.12-correctness.txt)
 - [NVIDIA `p2pBandwidthLatencyTest` output](../results/static-bar1-610.57.04-7.0.12-p2pBandwidthLatencyTest.txt)
 - [Fallback baseline without Static BAR1](../results/baseline-no-static-bar1-7.0.12.txt)
+- [Three-GPU NUMA/root-complex `p2pBandwidthLatencyTest` output](../results/static-bar1-three-gpu-numa-20260914-p2pBandwidthLatencyTest.txt)
 
 ## Important limits
 

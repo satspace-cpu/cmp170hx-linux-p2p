@@ -8,10 +8,11 @@ This repository is intended to be a practical map for CMP 170HX owners, from a n
 2. **PCIe x4 → x16 hardware modification** — [`PCIE-X16-HARDWARE-MOD.md`](PCIE-X16-HARDWARE-MOD.md) / [Русский](PCIE-X16-HARDWARE-MOD.ru.md)
 3. **Tune and validate with 170tune** — [`170TUNE.md`](170TUNE.md)
 4. **Install and verify Static BAR1 P2P** — [`STATIC-BAR1-P2P.md`](STATIC-BAR1-P2P.md) / [Русский](STATIC-BAR1-P2P.ru.md)
-5. **Understand the historical mailbox investigation** — [`P2P-EXPLAINED.md`](P2P-EXPLAINED.md)
-6. **Compare P2P implementations and limits** — [`P2P-ALTERNATIVE-PATHS.md`](P2P-ALTERNATIVE-PATHS.md) / [Русский](P2P-ALTERNATIVE-PATHS.ru.md)
-7. **See measured results** — [`BENCHMARKS.md`](BENCHMARKS.md)
-8. **Troubleshoot** — [`TROUBLESHOOTING.md`](TROUBLESHOOTING.md)
+5. **See the measured NUMA/root-complex impact on Static BAR1 P2P** — [`STATIC-BAR1-P2P.md#three-gpu-numa-root-complex`](STATIC-BAR1-P2P.md#three-gpu-numa-root-complex) / [Русский](STATIC-BAR1-P2P.ru.md#three-gpu-numa-root-complex)
+6. **Understand the historical mailbox investigation** — [`P2P-EXPLAINED.md`](P2P-EXPLAINED.md)
+7. **Compare P2P implementations and limits** — [`P2P-ALTERNATIVE-PATHS.md`](P2P-ALTERNATIVE-PATHS.md) / [Русский](P2P-ALTERNATIVE-PATHS.ru.md)
+8. **See measured results** — [`BENCHMARKS.md`](BENCHMARKS.md)
+9. **Troubleshoot** — [`TROUBLESHOOTING.md`](TROUBLESHOOTING.md)
 
 ## Frontier / research
 

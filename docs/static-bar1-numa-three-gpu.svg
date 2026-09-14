@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="650" viewBox="0 0 1000 650" role="img" aria-labelledby="title desc">
+  <title id="title">CMP 170HX three-GPU NUMA/root-complex P2P measurement</title>
+  <desc id="desc">GPU1 to GPU2 uses direct Static BAR1 P2P. GPU0 to either peer uses CUDA fallback through a different NUMA/root path. Charts compare enabled bandwidth and GPU latency.</desc>
+  <style>
+    text { font-family: Arial, sans-serif; fill: #172033; } .small { font-size: 14px; } .label { font-size: 16px; font-weight: 700; } .title { font-size: 25px; font-weight: 700; } .axis { stroke: #8090aa; stroke-width: 1; } .grid { stroke: #d8e0ec; stroke-width: 1; } .p2p { fill: #16846b; } .fallback { fill: #e2943f; } .muted { fill: #57657a; }
+  </style>
+  <rect width="1000" height="650" fill="#fbfcff"/>
+  <text x="50" y="42" class="title">Measured three-GPU topology: direct Static BAR1 P2P vs NUMA/root fallback</text>
+  <text x="50" y="68" class="small muted">2× CMP 170HX Static BAR1 pair: GPU1 82:00.0 ↔ GPU2 83:00.0. GPU0 05:00.0 is on another NUMA/root path.</text>
+  <rect x="50" y="95" width="900" height="200" rx="10" fill="#f1f5fa"/>
+  <text x="75" y="125" class="label">Enabled bandwidth (GB/s)</text>
+  <text x="75" y="151" class="small muted">Green = direct P2P. Orange = CUDA fallback; it is not a peer mapping.</text>
+  <line x1="320" y1="170" x2="900" y2="170" class="grid"/><line x1="320" y1="205" x2="900" y2="205" class="grid"/><line x1="320" y1="240" x2="900" y2="240" class="grid"/>
+  <text x="75" y="188" class="small">GPU1↔GPU2 direct P2P</text><rect x="320" y="176" width="290" height="16" class="p2p"/><text x="620" y="189" class="small">5.30 one-way</text><rect x="320" y="195" width="562" height="16" class="p2p"/><text x="892" y="208" text-anchor="end" class="small">10.26 bidirectional</text>
+  <text x="75" y="224" class="small">GPU0↔GPU1 fallback</text><rect x="320" y="212" width="329" height="16" class="fallback"/><text x="659" y="225" class="small">6.01 one-way</text><rect x="320" y="231" width="456" height="16" class="fallback"/><text x="786" y="244" class="small">8.33 bidirectional</text>
+  <text x="75" y="260" class="small">GPU0↔GPU2 fallback</text><rect x="320" y="248" width="329" height="16" class="fallback"/><text x="659" y="261" class="small">6.01 one-way</text><rect x="320" y="267" width="456" height="16" class="fallback"/><text x="786" y="280" class="small">8.33 bidirectional</text>
+  <rect x="50" y="300" width="900" height="285" rx="10" fill="#f1f5fa"/>
+  <text x="75" y="330" class="label">Enabled GPU latency (µs; directed measurement)</text>
+  <text x="75" y="356" class="small muted">Low latency identifies the direct peer path more clearly than one-way fallback bandwidth.</text>
+  <line x1="100" y1="540" x2="900" y2="540" class="axis"/><line x1="100" y1="385" x2="100" y2="540" class="axis"/>
+  <line x1="100" y1="492" x2="900" y2="492" class="grid"/><line x1="100" y1="444" x2="900" y2="444" class="grid"/><line x1="100" y1="396" x2="900" y2="396" class="grid"/>
+  <text x="88" y="544" text-anchor="end" class="small">0</text><text x="88" y="496" text-anchor="end" class="small">10</text><text x="88" y="448" text-anchor="end" class="small">20</text><text x="88" y="400" text-anchor="end" class="small">30</text>
+  <rect x="170" y="532" width="65" height="8" class="p2p"/><text x="202" y="524" text-anchor="middle" class="small">1.64</text><text x="202" y="562" text-anchor="middle" class="small">GPU1→2</text>
+  <rect x="310" y="532" width="65" height="8" class="p2p"/><text x="342" y="524" text-anchor="middle" class="small">1.64</text><text x="342" y="562" text-anchor="middle" class="small">GPU2→1</text>
+  <rect x="450" y="442" width="65" height="98" class="fallback"/><text x="482" y="434" text-anchor="middle" class="small">20.38</text><text x="482" y="562" text-anchor="middle" class="small">GPU0→1</text>
+  <rect x="590" y="441" width="65" height="99" class="fallback"/><text x="622" y="433" text-anchor="middle" class="small">20.53</text><text x="622" y="562" text-anchor="middle" class="small">GPU1→0</text>
+  <rect x="730" y="453" width="65" height="87" class="fallback"/><text x="762" y="445" text-anchor="middle" class="small">18.10</text><text x="762" y="562" text-anchor="middle" class="small">GPU0→2</text>
+  <rect x="850" y="485" width="65" height="55" class="fallback"/><text x="882" y="477" text-anchor="middle" class="small">11.37</text><text x="882" y="562" text-anchor="middle" class="small">GPU2→0</text>
+  <text x="50" y="620" class="small muted">CUDA sample: p2pBandwidthLatencyTest, 2026-09-14. All GPUs: PCIe Gen2 x16, 64 GiB VRAM/BAR1. No Xid/AER after run.</text>
+</svg>
