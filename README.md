@@ -131,6 +131,17 @@ Full results: [docs/BENCHMARKS.md](docs/BENCHMARKS.md)
 
 ---
 
+# Stage 6 — Diagnose and exclude a physical HBM page
+
+If `memtest_vulkan` reports a repeatable single-bit error while ECC and page
+retirement are unavailable, use the physical-page mapping and software
+blacklist procedure documented here:
+
+- [English — HBM page diagnosis and retirement](docs/HBM-PAGE-RETIREMENT.md)
+- [Русский — поиск и исключение страницы HBM](docs/HBM-PAGE-RETIREMENT.ru.md)
+
+---
+
 # Recommended order for a brand-new card
 
 1. Install Linux and the supported NVIDIA Open Kernel Module version.
@@ -158,6 +169,7 @@ Full results: [docs/BENCHMARKS.md](docs/BENCHMARKS.md)
 - [PCIe Gen3 research/status](docs/PCIE-GEN3-STATUS.md)
 - [Verified Static BAR1 P2P](docs/STATIC-BAR1-P2P.md)
 - [Проверенный Static BAR1 P2P](docs/STATIC-BAR1-P2P.ru.md)
+- [HBM page diagnosis / retirement](docs/HBM-PAGE-RETIREMENT.md) · [Русский](docs/HBM-PAGE-RETIREMENT.ru.md)
 - [P2P alternative paths](docs/P2P-ALTERNATIVE-PATHS.md)
 - [How the P2P failure and fix work](docs/P2P-EXPLAINED.md)
 - [Benchmarks](docs/BENCHMARKS.md)

@@ -381,6 +381,17 @@ GPU latency:   1.54–1.62 us
 
 ---
 
+# Этап 6 — Поиск и исключение физической страницы HBM
+
+Если `memtest_vulkan` стабильно находит однобитную ошибку, а ECC и штатный
+page retirement недоступны, используйте процедуру физического mapping и
+программного blacklist:
+
+- [Русский — поиск и исключение страницы HBM](docs/HBM-PAGE-RETIREMENT.ru.md)
+- [English — HBM page diagnosis and retirement](docs/HBM-PAGE-RETIREMENT.md)
+
+---
+
 # Что получилось в LLM
 
 Изначальная цель проекта — multi-GPU local LLM.
@@ -414,6 +425,7 @@ GPU latency:   1.54–1.62 us
 - [170tune](docs/170TUNE.md)
 - [Установка/проверка P2P](docs/INSTALL.md)
 - [Как мы нашли и исправили P2P bug](docs/P2P-EXPLAINED.md)
+- [Поиск и исключение страницы HBM](docs/HBM-PAGE-RETIREMENT.ru.md) · [English](docs/HBM-PAGE-RETIREMENT.md)
 - [Все тесты](docs/BENCHMARKS.md)
 - [Troubleshooting](docs/TROUBLESHOOTING.md)
 - [Наш mailbox patch](patches/p2p-cmp170-mailbox-fix.patch)
