@@ -23,7 +23,7 @@ Visible memory: 65536 MiB
 The observed test error was a one-bit `INITIAL_READ` error at:
 
 ```text
-0xABA44765C..=0xABA44765F
+0xABA44677C..=0xABA44677F
 ```
 
 The address above is an offset inside the current Vulkan test buffer. It is
@@ -38,8 +38,8 @@ logical=0xF0000  previous physical=0x129F0000  next physical=0x12C00000
 Therefore, for the failing offset:
 
 ```text
-physical = 0x12C00000 + (0xABA44765C - 0xF0000)
-         = 0xACCF5765C
+physical = 0x12C00000 + (0xABA44677C - 0xF0000)
+         = 0xACCF5677C
 ```
 
 PMA uses a 64 KiB page frame, so the retired page base is:
@@ -48,7 +48,7 @@ PMA uses a 64 KiB page frame, so the retired page base is:
 0xACCF50000  (64 KiB)
 ```
 
-The bit was at offset `0x765C` inside that page. The final five-minute
+The bit was at offset `0x677C` inside that page. The final five-minute
 `memtest_vulkan` run passed, and the test continued past 1,800 iterations
 without an error. Before retirement, the same signature appeared repeatedly
 around iterations 8–47.
@@ -72,7 +72,7 @@ The exact `memtest_vulkan` v0.5.0 source shows that:
 The same logical offset can move when another allocation is made first. In the
 reference case the error moved when 8 GiB and 16 GiB were reserved before the
 test. That proves relocation of the allocation, not movement of a physical HBM
-defect. It is also why an error address such as `0xABA44765C` cannot be put
+defect. It is also why an error address such as `0xABA44677C` cannot be put
 directly into a driver blacklist.
 
 ## 1. Capture a read-only baseline
