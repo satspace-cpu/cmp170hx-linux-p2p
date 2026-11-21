@@ -7,13 +7,14 @@ This repository is intended to be a practical map for CMP 170HX owners, from a n
 1. **Unlock memory and compute** — [`UNLOCK.md`](UNLOCK.md)
 2. **PCIe x4 → x16 hardware modification** — [`PCIE-X16-HARDWARE-MOD.md`](PCIE-X16-HARDWARE-MOD.md) / [Русский](PCIE-X16-HARDWARE-MOD.ru.md)
 3. **Tune and validate with 170tune** — [`170TUNE.md`](170TUNE.md)
-4. **Install and verify Static BAR1 P2P** — [`STATIC-BAR1-P2P.md`](STATIC-BAR1-P2P.md) / [Русский](STATIC-BAR1-P2P.ru.md)
-5. **See the measured NUMA/root-complex impact on Static BAR1 P2P** — [`STATIC-BAR1-P2P.md#three-gpu-numa-root-complex`](STATIC-BAR1-P2P.md#three-gpu-numa-root-complex) / [Русский](STATIC-BAR1-P2P.ru.md#three-gpu-numa-root-complex)
-6. **Diagnose and exclude a physical HBM page** — [`HBM-PAGE-RETIREMENT.md`](HBM-PAGE-RETIREMENT.md) / [Русский](HBM-PAGE-RETIREMENT.ru.md)
-7. **Understand the historical mailbox investigation** — [`P2P-EXPLAINED.md`](P2P-EXPLAINED.md)
-8. **Compare P2P implementations and limits** — [`P2P-ALTERNATIVE-PATHS.md`](P2P-ALTERNATIVE-PATHS.md) / [Русский](P2P-ALTERNATIVE-PATHS.ru.md)
-9. **See measured results** — [`BENCHMARKS.md`](BENCHMARKS.md)
-10. **Troubleshoot** — [`TROUBLESHOOTING.md`](TROUBLESHOOTING.md)
+4. **Hardware-unlocked 80 GiB cards: build the driver and enable P2P safely** — [`CMP170HX-80GB-DRIVER-P2P.md`](CMP170HX-80GB-DRIVER-P2P.md) / [Русский](CMP170HX-80GB-DRIVER-P2P.ru.md)
+5. **64 GiB cards: install and verify Static BAR1 P2P** — [`STATIC-BAR1-P2P.md`](STATIC-BAR1-P2P.md) / [Русский](STATIC-BAR1-P2P.ru.md)
+6. **See the measured NUMA/root-complex impact on Static BAR1 P2P** — [`STATIC-BAR1-P2P.md#three-gpu-numa-root-complex`](STATIC-BAR1-P2P.md#three-gpu-numa-root-complex) / [Русский](STATIC-BAR1-P2P.ru.md#three-gpu-numa-root-complex)
+7. **Diagnose and exclude a physical HBM page** — [`HBM-PAGE-RETIREMENT.md`](HBM-PAGE-RETIREMENT.md) / [Русский](HBM-PAGE-RETIREMENT.ru.md)
+8. **Understand the historical mailbox investigation** — [`P2P-EXPLAINED.md`](P2P-EXPLAINED.md)
+9. **Compare P2P implementations and limits** — [`P2P-ALTERNATIVE-PATHS.md`](P2P-ALTERNATIVE-PATHS.md) / [Русский](P2P-ALTERNATIVE-PATHS.ru.md)
+10. **See measured results** — [`BENCHMARKS.md`](BENCHMARKS.md)
+11. **Troubleshoot** — [`TROUBLESHOOTING.md`](TROUBLESHOOTING.md)
 
 ## Frontier / research
 
@@ -23,7 +24,16 @@ Current public status: Gen2 is working; Gen3 reverse engineering is active but w
 
 ## P2P implementations tracked here
 
-### Static BAR1 path — currently verified
+### Hardware-unlocked 80 GiB path — verified companion design
+
+The 80 GiB configuration uses a dedicated `20c2-hw80` NVIDIA driver profile
+plus a minimal `gpu-unlock 3.0.0-beta` companion. It does not resize BAR1 and
+must not be mixed with the 64 GiB Static BAR1 module options. Peer copy, direct
+SM remote read and direct SM remote write passed in both directions.
+
+See [`CMP170HX-80GB-DRIVER-P2P.md`](CMP170HX-80GB-DRIVER-P2P.md) / [Русский](CMP170HX-80GB-DRIVER-P2P.ru.md).
+
+### Static BAR1 path — verified for 64 GiB
 
 Verified on this repository's GPU1↔GPU2 Gen2 x16 pair with a content check:
 
@@ -43,7 +53,8 @@ Alternative implementation maintained in:
 
 The old Mailbox B2 result is retained for investigation/recovery only. It is
 not evidence of working P2P: later content tests showed peer VRAM was not
-updated. The practical path is Static BAR1 above.
+updated. For 64 GiB cards, the practical path is Static BAR1 above; use the
+separate companion guide for hardware-unlocked 80 GiB cards.
 
 See [`P2P-ALTERNATIVE-PATHS.md`](P2P-ALTERNATIVE-PATHS.md) before choosing a protocol path.
 

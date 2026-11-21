@@ -1,6 +1,6 @@
 # CMP 170HX Linux Guide: 64 GB Unlock → 170tune → PCIe x16 → P2P
 
-[Русская версия](README.ru.md) · [Physical x4→x16 mod](docs/PCIE-X16-HARDWARE-MOD.md) · [Русская инструкция x4→x16](docs/PCIE-X16-HARDWARE-MOD.ru.md) · [Benchmarks](docs/BENCHMARKS.md) · [Troubleshooting](docs/TROUBLESHOOTING.md)
+[Русская версия](README.ru.md) · **[80 GiB driver + P2P](docs/CMP170HX-80GB-DRIVER-P2P.md)** · [Physical x4→x16 mod](docs/PCIE-X16-HARDWARE-MOD.md) · [Benchmarks](docs/BENCHMARKS.md) · [Troubleshooting](docs/TROUBLESHOOTING.md)
 
 A beginner-friendly end-to-end guide for NVIDIA CMP 170HX owners.
 
@@ -106,7 +106,7 @@ Current public research has Gen2 working. Gen3 remains an open research problem.
 
 # Stage 5 — Enable and verify CUDA P2P
 
-The current verified path is **Static BAR1**. It maps the remote GPU framebuffer
+For cards software-unlocked to **64 GiB**, the current verified path is **Static BAR1**. It maps the remote GPU framebuffer
 through the remote GPU's 64 GiB BAR1 window; it does not use the old mailbox
 data path. On the current Gen2 x16 host it produced:
 
@@ -121,6 +121,12 @@ The result is verified by both CUDA sample output and a separate content test:
 `cuMemcpyPeer`, SM remote reads and SM remote writes passed in both directions.
 Read the complete procedure, topology limits, chart and raw output in
 [Static BAR1 P2P](docs/STATIC-BAR1-P2P.md).
+
+Hardware-unlocked **80 GiB** `10de:20c2` cards require a separate driver profile
+and must not use the 64 GiB Static BAR1 recipe. See the complete bilingual
+[80 GiB driver, P2P and HBM sensor guide](docs/CMP170HX-80GB-DRIVER-P2P.md).
+Its minimal companion path passed peer-copy and direct SM read/write content
+checks without resizing BAR1.
 
 > **Mailbox B2 correction:** previously published 6.69–6.70 GB/s Mailbox B2
 > figures were a false positive. Later content testing found that peer VRAM was
@@ -167,6 +173,7 @@ blacklist procedure documented here:
 - **[PCIe x4 → x16 physical soldering guide](docs/PCIE-X16-HARDWARE-MOD.md)**
 - **[Русская инструкция x4 → x16](docs/PCIE-X16-HARDWARE-MOD.ru.md)**
 - [PCIe Gen3 research/status](docs/PCIE-GEN3-STATUS.md)
+- **[80 GiB hardware-unlocked driver + P2P](docs/CMP170HX-80GB-DRIVER-P2P.md)** · [Русский](docs/CMP170HX-80GB-DRIVER-P2P.ru.md)
 - [Verified Static BAR1 P2P](docs/STATIC-BAR1-P2P.md)
 - [Проверенный Static BAR1 P2P](docs/STATIC-BAR1-P2P.ru.md)
 - [HBM page diagnosis / retirement](docs/HBM-PAGE-RETIREMENT.md) · [Русский](docs/HBM-PAGE-RETIREMENT.ru.md)

@@ -1,0 +1,43 @@
+diff --git a/kernel/gpu_unlock/main.c b/kernel/gpu_unlock/main.c
+index 8281625..40252d6 100644
+--- a/kernel/gpu_unlock/main.c
++++ b/kernel/gpu_unlock/main.c
+@@ -44,0 +45,4 @@ MODULE_PARM_DESC(vram_temps, "Report the VRAM temperatures of supported cards th
++static bool hbm_governor = true;
++module_param(hbm_governor, bool, 0444);
++MODULE_PARM_DESC(hbm_governor, "Run the activity-based HBM clock governor (default: on)");
++
+@@ -451 +455 @@ static int unlock_targets(void)
+-		if (card->device.recipe->family->vram == GU_VRAM_HBM) {
++		if (hbm_governor && card->device.recipe->family->vram == GU_VRAM_HBM) {
+diff --git a/kernel/gpu_unlock/recipes.c b/kernel/gpu_unlock/recipes.c
+index 13ea5e3..6c7802a 100644
+--- a/kernel/gpu_unlock/recipes.c
++++ b/kernel/gpu_unlock/recipes.c
+@@ -325,0 +326,5 @@ static const struct gu_reg_write ga100_privileged[] = {
++static const struct gu_reg_write ga100_hw80_p2p_privileged[] = {
++	GU_WRITE(GU_WPR1_ADDR_HI_OFFSET, 0),
++	GU_WRITE(GU_WPR1_ADDR_LO_OFFSET, 0x1ffffe00),
++};
++
+@@ -601,0 +607,16 @@ static const struct gu_family ga100 = {
++static const struct gu_family ga100_hw80_p2p = {
++	.name = "GA100 CMP 170HX hw80 P2P companion",
++	.memory = GU_MEMORY_RANGE,
++	.vram = GU_VRAM_HBM,
++	.fuse = &ga100_fuse,
++	.privileged = GU_WRITE_TABLE(ga100_hw80_p2p_privileged),
++	.p2p = true,
++	.handover = GU_WRITE_TABLE(ga100_handover),
++	.fw = &ga100_fw,
++	.booter = &sec2_ga100,
++	.loader = GU_FW_LOADER,
++	.fwsec_version = 2,
++	.frts = false,
++	.feat = &ampere_features,
++	.scrub_via_dmactl = true,
++};
+@@ -688 +709,2 @@ static const struct gu_card cards[] = {
+-	GA100(0x20c2, cmp170hx_8gb_geometry, 0), GA100(0x2082, cmp170hx_10gb_geometry, 300000),
++	{ .device = 0x20c2, .chip = 0x170, .family = &ga100_hw80_p2p },
++	GA100(0x2082, cmp170hx_10gb_geometry, 300000),
