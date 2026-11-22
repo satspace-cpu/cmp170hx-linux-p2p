@@ -18,9 +18,10 @@ This repository is intended to be a practical map for CMP 170HX owners, from a n
 
 ## Frontier / research
 
-- **PCIe Gen3 / Gen4 status and research directions** — [`PCIE-GEN3-STATUS.md`](PCIE-GEN3-STATUS.md) / [Русский](PCIE-GEN3-STATUS.ru.md)
+- **Current PCIe Gen3 / Gen4 report and project measurements** — [`PCIE-GEN4-2026-11-22.md`](PCIE-GEN4-2026-11-22.md) / [Русский](PCIE-GEN4-2026-11-22.ru.md)
+- **Historical August 2026 research snapshot** — [`PCIE-GEN3-STATUS.md`](PCIE-GEN3-STATUS.md) / [Русский](PCIE-GEN3-STATUS.ru.md)
 
-Current public status: Gen2 is working; Gen3 reverse engineering is active but we have not found a reproducible public CMP 170HX capture with an actually trained `LnkSta: Speed 8GT/s` as of 2026-08-19.
+Current project status: Gen3 x16 (8 GT/s) is reproduced on two hardware-unlocked 80 GiB CMP 170HX cards with 10.26 GB/s one-way and 19.59–19.60 GB/s bidirectional CUDA P2P. Gen4 remains the next experimental stage.
 
 ## P2P implementations tracked here
 
