@@ -1,6 +1,6 @@
 # CMP 170HX Linux Guide: 64 GB Unlock → 170tune → PCIe x16 → P2P
 
-**New (2026-11-22): [PCIe Gen3/Gen4: measurements, driver patches, fuses, EPYC risks and P2P test plan](docs/PCIE-GEN4-2026-11-22.md) · [Русская версия](docs/PCIE-GEN4-2026-11-22.ru.md).** These are community lab results, not yet reproduced on this project's own server.
+**New (2026-11-22): [PCIe Gen3/Gen4: driver patches, fuse states and real measurements](docs/PCIE-GEN4-2026-11-22.md) · [Русская версия](docs/PCIE-GEN4-2026-11-22.ru.md).** Project-owned Gen3 x16 is now reproduced on 2× 80 GiB CMP 170HX: 10.26 GB/s one-way P2P, 19.59–19.60 GB/s bidirectional. Gen4 is the next test stage.
 
 [Русская версия](README.ru.md) · **[80 GiB driver + P2P](docs/CMP170HX-80GB-DRIVER-P2P.md)** · [Physical x4→x16 mod](docs/PCIE-X16-HARDWARE-MOD.md) · [Benchmarks](docs/BENCHMARKS.md) · [Troubleshooting](docs/TROUBLESHOOTING.md)
 
