@@ -1,0 +1,71 @@
+CMP 170HX 80 GiB PCIe Gen3 x16 — CUDA P2P benchmark
+Date: 2026-11-22T23:20:46+03:00
+Host: HUANANZHI X10X99-16D
+CPU: 2x Intel Xeon E5-2697 v4
+OS: Ubuntu 26.04.1 LTS
+Kernel: 7.0.0-42-generic
+NVIDIA driver: 610.57.04
+nvidia.ko SHA256: 3b8fb6a9ab12397b0ebf803c9939a1ae0269d807e48f3206bd3856b18021e754
+GPU0: 0000:81:00.0, serial 1322321006021, UUID GPU-b973578c-a5f5-bdad-bd64-26042a1a49e8, 81920 MiB
+GPU1: 0000:82:00.0, serial 1322821045217, UUID GPU-186e1ee2-3718-d455-d9ba-e5a3c1379bb5, 81920 MiB
+Endpoint links: 8 GT/s x16
+Upstream root-port links: 8 GT/s x16
+nvidia-smi topo -p2p r: OK in both directions
+
+Five consecutive p2pBandwidthLatencyTest runs (P2P enabled)
+Run  Uni 0->1  Uni 1->0  Bi 0->1  Bi 1->0  Lat 0->1  Lat 1->0
+      GB/s      GB/s      GB/s     GB/s     us        us
+1     10.26     10.26     19.59     19.59     1.77      1.77
+2     10.26     10.26     19.60     19.60     1.75      1.74
+3     10.26     10.26     19.59     19.60     1.77      1.72
+4     10.26     10.26     19.59     19.59     1.75      1.73
+5     10.26     10.26     19.59     19.60     1.81      1.74
+Mean  10.26     10.26     19.592    19.596    1.77      1.74
+
+Representative complete run
+===========================
+[P2P (Peer-to-Peer) GPU Bandwidth Latency Test]
+Device: 0, NVIDIA CMP 170HX, pciBusID: 82, pciDeviceID: 0, pciDomainID:0
+Device: 1, NVIDIA CMP 170HX, pciBusID: 81, pciDeviceID: 0, pciDomainID:0
+Device=0 CAN Access Peer Device=1
+Device=1 CAN Access Peer Device=0
+
+P2P Connectivity Matrix
+     D\D     0     1
+     0       1     1
+     1       1     1
+Unidirectional P2P=Disabled Bandwidth Matrix (GB/s)
+   D\D     0      1
+     0 1887.08  11.31
+     1  11.29 1900.85
+Unidirectional P2P=Enabled Bandwidth (P2P Writes) Matrix (GB/s)
+   D\D     0      1
+     0 1869.02  10.26
+     1  10.26 1940.99
+Bidirectional P2P=Disabled Bandwidth Matrix (GB/s)
+   D\D     0      1
+     0 1923.08  15.85
+     1  15.92 1954.35
+Bidirectional P2P=Enabled Bandwidth Matrix (GB/s)
+   D\D     0      1
+     0 1925.45  19.59
+     1  19.60 1950.69
+P2P=Disabled Latency Matrix (us)
+   GPU     0      1
+     0   2.30  42.26
+     1  10.82   2.55
+
+   CPU     0      1
+     0   2.56   6.83
+     1   6.90   2.53
+P2P=Enabled Latency (P2P Writes) Matrix (us)
+   GPU     0      1
+     0   2.48   1.79
+     1   1.72   2.30
+
+   CPU     0      1
+     0   2.69   1.91
+     1   2.09   2.65
+
+NOTE: CUDA Samples are not designed as a complete performance-validation suite.
+No NVRM Xid or RmInitAdapter errors were present after the five-run series.
