@@ -1,5 +1,7 @@
 # CMP 170HX PCIe Gen3 / Gen4 research status
 
+> **UPDATE — 2026-11-22:** This is a **historical snapshot from 2026-08-19**, not the current state of CMP 170HX Gen3/Gen4. External labs have now published trained 8/16 GT/s links and Gen4 pinned-copy measurements. See the [new 2026 Gen4 review](PCIE-GEN4-2026-11-22.md) ([Russian](PCIE-GEN4-2026-11-22.ru.md)). The older research below is preserved for historical context; this project's own Gen4 tests are still pending.
+
 > **Status: UNSOLVED / research only.** As of the public sources checked on 2026-08-19, we found no reproducible CMP 170HX capture with `LnkSta: Speed 8GT/s` (Gen3) or `16GT/s` (Gen4). Capability advertisement is not the same as a trained link.
 
 This page collects the public Gen3/Gen4 work in one place so new experiments do not repeat already-disproved ideas.
