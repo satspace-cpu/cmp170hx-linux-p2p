@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="720" viewBox="0 0 1200 720" role="img" aria-labelledby="title desc">
+  <title id="title">CMP 170HX Gen3 x16 CUDA P2P benchmark</title>
+  <desc id="desc">Five consecutive runs on two 80 GiB CMP 170HX cards. One-way bandwidth is 10.26 GB/s, bidirectional bandwidth is 19.59 to 19.60 GB/s, and peer latency is 1.72 to 1.81 microseconds.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#0d1117"/><stop offset="1" stop-color="#161b22"/></linearGradient>
+    <linearGradient id="cyan" x1="0" y1="1" x2="0" y2="0"><stop stop-color="#0078d4"/><stop offset="1" stop-color="#58d6ff"/></linearGradient>
+    <linearGradient id="violet" x1="0" y1="1" x2="0" y2="0"><stop stop-color="#7546c9"/><stop offset="1" stop-color="#d38cff"/></linearGradient>
+    <filter id="shadow"><feDropShadow dx="0" dy="6" stdDeviation="8" flood-opacity=".35"/></filter>
+    <style>
+      .t{font-family:Inter,Segoe UI,Arial,sans-serif;fill:#f0f6fc}.m{font-family:Inter,Segoe UI,Arial,sans-serif;fill:#8b949e}
+      .grid{stroke:#30363d;stroke-width:1}.axis{stroke:#6e7681;stroke-width:1.5}.card{fill:#161b22;stroke:#30363d;stroke-width:1.2}
+      .small{font-size:16px}.label{font-size:18px;font-weight:600}.value{font-size:29px;font-weight:700}.title{font-size:33px;font-weight:750}
+    </style>
+  </defs>
+  <rect width="1200" height="720" rx="24" fill="url(#bg)"/>
+  <text id="chart-title" x="54" y="58" class="t title">CMP 170HX · PCIe Gen3 x16 · real CUDA P2P</text>
+  <text x="55" y="87" class="m small">2 × hardware-unlocked 80 GiB cards · NVIDIA 610.57.04 · five consecutive runs · 2026-11-22</text>
+
+  <g filter="url(#shadow)">
+    <rect x="54" y="112" width="330" height="92" rx="14" class="card"/>
+    <rect x="435" y="112" width="330" height="92" rx="14" class="card"/>
+    <rect x="816" y="112" width="330" height="92" rx="14" class="card"/>
+  </g>
+  <text x="78" y="143" class="m small">ONE-WAY P2P WRITES</text><text x="78" y="181" class="t value">10.26 GB/s</text>
+  <text x="459" y="143" class="m small">BIDIRECTIONAL P2P</text><text x="459" y="181" class="t value">19.59–19.60 GB/s</text>
+  <text x="840" y="143" class="m small">PEER LATENCY</text><text x="840" y="181" class="t value">1.72–1.81 µs</text>
+
+  <text x="55" y="247" class="t label">Bandwidth stability across five runs</text>
+  <line x1="92" y1="458" x2="1145" y2="458" class="axis"/>
+  <line x1="92" y1="278" x2="92" y2="458" class="axis"/>
+  <g class="m small" text-anchor="end">
+    <text x="82" y="463">0</text><text x="82" y="418">5</text><text x="82" y="373">10</text><text x="82" y="328">15</text><text x="82" y="283">20</text>
+  </g>
+  <g class="grid"><line x1="92" y1="413" x2="1145" y2="413"/><line x1="92" y1="368" x2="1145" y2="368"/><line x1="92" y1="323" x2="1145" y2="323"/><line x1="92" y1="278" x2="1145" y2="278"/></g>
+  <text x="26" y="373" transform="rotate(-90 26 373)" class="m small">GB/s</text>
+
+  <g filter="url(#shadow)">
+    <rect x="154" y="365.66" width="48" height="92.34" rx="7" fill="url(#cyan)"/><rect x="210" y="281.69" width="48" height="176.31" rx="7" fill="url(#violet)"/>
+    <rect x="344" y="365.66" width="48" height="92.34" rx="7" fill="url(#cyan)"/><rect x="400" y="281.60" width="48" height="176.40" rx="7" fill="url(#violet)"/>
+    <rect x="534" y="365.66" width="48" height="92.34" rx="7" fill="url(#cyan)"/><rect x="590" y="281.64" width="48" height="176.36" rx="7" fill="url(#violet)"/>
+    <rect x="724" y="365.66" width="48" height="92.34" rx="7" fill="url(#cyan)"/><rect x="780" y="281.69" width="48" height="176.31" rx="7" fill="url(#violet)"/>
+    <rect x="914" y="365.66" width="48" height="92.34" rx="7" fill="url(#cyan)"/><rect x="970" y="281.64" width="48" height="176.36" rx="7" fill="url(#violet)"/>
+  </g>
+  <g class="t small" text-anchor="middle"><text x="206" y="486">Run 1</text><text x="396" y="486">Run 2</text><text x="586" y="486">Run 3</text><text x="776" y="486">Run 4</text><text x="966" y="486">Run 5</text></g>
+  <g><rect x="820" y="227" width="16" height="16" rx="3" fill="#35bdf0"/><text x="845" y="241" class="m small">one-way mean</text><rect x="980" y="227" width="16" height="16" rx="3" fill="#be79ef"/><text x="1005" y="241" class="m small">bidirectional</text></g>
+
+  <text x="55" y="538" class="t label">Directional peer latency</text>
+  <rect x="54" y="557" width="1092" height="112" rx="14" class="card"/>
+  <line x1="104" y1="618" x2="1098" y2="618" class="grid"/>
+  <polyline points="155,602 345,608 535,602 725,608 915,590" fill="none" stroke="#58d6ff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  <polyline points="155,602 345,611 535,617 725,614 915,611" fill="none" stroke="#d38cff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  <g fill="#58d6ff"><circle cx="155" cy="602" r="5"/><circle cx="345" cy="608" r="5"/><circle cx="535" cy="602" r="5"/><circle cx="725" cy="608" r="5"/><circle cx="915" cy="590" r="5"/></g>
+  <g fill="#d38cff"><circle cx="155" cy="602" r="5"/><circle cx="345" cy="611" r="5"/><circle cx="535" cy="617" r="5"/><circle cx="725" cy="614" r="5"/><circle cx="915" cy="611" r="5"/></g>
+  <text x="965" y="594" class="t small">0→1: mean 1.77 µs</text><text x="965" y="623" class="t small">1→0: mean 1.74 µs</text>
+  <text x="55" y="702" class="m small">Endpoint and upstream root ports: LnkSta 8 GT/s x16 · P2P topology: OK · no NVRM Xid after the series</text>
+</svg>
