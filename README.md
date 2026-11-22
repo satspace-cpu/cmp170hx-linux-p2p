@@ -1,5 +1,7 @@
 # CMP 170HX Linux Guide: 64 GB Unlock → 170tune → PCIe x16 → P2P
 
+**New (2026-11-22): [PCIe Gen3/Gen4: measurements, driver patches, fuses, EPYC risks and P2P test plan](docs/PCIE-GEN4-2026-11-22.md) · [Русская версия](docs/PCIE-GEN4-2026-11-22.ru.md).** These are community lab results, not yet reproduced on this project's own server.
+
 [Русская версия](README.ru.md) · **[80 GiB driver + P2P](docs/CMP170HX-80GB-DRIVER-P2P.md)** · [Physical x4→x16 mod](docs/PCIE-X16-HARDWARE-MOD.md) · [Benchmarks](docs/BENCHMARKS.md) · [Troubleshooting](docs/TROUBLESHOOTING.md)
 
 A beginner-friendly end-to-end guide for NVIDIA CMP 170HX owners.
@@ -97,7 +99,7 @@ These pages include the parts list, soldering workflow, preheating advice, diagn
 
 The capacitor modification changes **link width**. Gen1 → Gen2 is a separate software change.
 
-Current public research has Gen2 working. Gen3 remains an open research problem.
+Gen2 is verified here; for reported Gen3/Gen4 successes from November 2026, see the new analysis linked above. Our own Gen3/Gen4 testing is pending.
 
 - [Gen3 status / research](docs/PCIE-GEN3-STATUS.md)
 - [Русский статус Gen3](docs/PCIE-GEN3-STATUS.ru.md)
