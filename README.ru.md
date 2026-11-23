@@ -1,5 +1,9 @@
 # CMP 170HX Linux: полный путь от разлочки до 170tune и рабочего CUDA P2P
 
+> 🇷🇺 **Купить в России переделанные карты CMP 170HX:** [объявление на Avito](https://www.avito.ru/voronezh/tovary_dlya_kompyutera/nvidia_cmp170_hx_x16_anlok_80_gb_110_sm_gen4_8492880790)
+>
+> 🛠️ **Переделать CMP 170HX в России:** [услуга на Avito](https://www.avito.ru/voronezh/nastolnye_kompyutery/nvidia_cmp_170hx_anlok_80_gig_gen4_sm_do_128_8437550194)
+
 **Новое (22.11.2026): [PCIe Gen3/Gen4 — патчи, фьюзы и реальные измерения](docs/PCIE-GEN4-2026-11-22.ru.md) · [English](docs/PCIE-GEN4-2026-11-22.md).** Наш Gen3 x16 уже воспроизведён на 2× CMP 170HX по 80 ГиБ: 10.26 GB/s в одну сторону и 19.59–19.60 GB/s двунаправленно. Следующий этап — Gen4.
 
 [English](README.md) · **[Драйвер и P2P для аппаратных 80 ГиБ](docs/CMP170HX-80GB-DRIVER-P2P.ru.md)** · [Тесты](docs/BENCHMARKS.md) · [Решение проблем](docs/TROUBLESHOOTING.md)

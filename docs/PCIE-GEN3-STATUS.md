@@ -1,5 +1,9 @@
 # CMP 170HX PCIe Gen3 / Gen4 research status
 
+> 🇷🇺 **Buy modified CMP 170HX cards in Russia:** [Avito listing](https://www.avito.ru/voronezh/tovary_dlya_kompyutera/nvidia_cmp170_hx_x16_anlok_80_gb_110_sm_gen4_8492880790)
+>
+> 🛠️ **CMP 170HX modification service in Russia:** [Avito service listing](https://www.avito.ru/voronezh/nastolnye_kompyutery/nvidia_cmp_170hx_anlok_80_gig_gen4_sm_do_128_8437550194)
+
 > **UPDATE — 2026-11-22:** This is a **historical snapshot from 2026-08-19**, not the current state. We have now reproduced **Gen3 x16 (8 GT/s)** on two project-owned 80 GiB CMP 170HX cards and published five-run P2P measurements. Gen4 is still pending. See the [current Gen3/Gen4 report](PCIE-GEN4-2026-11-22.md) ([Russian](PCIE-GEN4-2026-11-22.ru.md)).
 
 > **Status: UNSOLVED / research only.** As of the public sources checked on 2026-08-19, we found no reproducible CMP 170HX capture with `LnkSta: Speed 8GT/s` (Gen3) or `16GT/s` (Gen4). Capability advertisement is not the same as a trained link.

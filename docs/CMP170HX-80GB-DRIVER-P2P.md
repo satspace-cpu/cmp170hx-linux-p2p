@@ -1,5 +1,9 @@
 # CMP 170HX 80 GiB: NVIDIA 610.57.04 driver, P2P and HBM sensors
 
+> 🇷🇺 **Buy modified CMP 170HX cards in Russia:** [Avito listing](https://www.avito.ru/voronezh/tovary_dlya_kompyutera/nvidia_cmp170_hx_x16_anlok_80_gb_110_sm_gen4_8492880790)
+>
+> 🛠️ **CMP 170HX modification service in Russia:** [Avito service listing](https://www.avito.ru/voronezh/nastolnye_kompyutery/nvidia_cmp_170hx_anlok_80_gig_gen4_sm_do_128_8437550194)
+
 [Русская версия](CMP170HX-80GB-DRIVER-P2P.ru.md)
 
 This guide documents a configuration **verified on a real server** for CMP 170HX `10de:20c2` cards hardware-unlocked with GA100VFI to 80 GiB. It is not intended for ordinary 8 GiB cards software-unlocked to 64 GiB.

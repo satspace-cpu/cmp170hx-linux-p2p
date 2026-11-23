@@ -1,5 +1,9 @@
 # Benchmarks
 
+> 🇷🇺 **Buy modified CMP 170HX cards in Russia:** [Avito listing](https://www.avito.ru/voronezh/tovary_dlya_kompyutera/nvidia_cmp170_hx_x16_anlok_80_gb_110_sm_gen4_8492880790)
+>
+> 🛠️ **CMP 170HX modification service in Russia:** [Avito service listing](https://www.avito.ru/voronezh/nastolnye_kompyutery/nvidia_cmp_170hx_anlok_80_gig_gen4_sm_do_128_8437550194)
+
 All numbers below are from the same dual-CMP 170HX system unless otherwise noted.
 
 > **P2P correction, 2026-09-11:** older Mailbox B2 P2P figures in this file

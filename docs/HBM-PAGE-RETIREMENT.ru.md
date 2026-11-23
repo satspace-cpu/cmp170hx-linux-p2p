@@ -1,5 +1,9 @@
 # Однобитные ошибки HBM на CMP 170HX: поиск физической страницы и программное исключение
 
+> 🇷🇺 **Купить в России переделанные карты CMP 170HX:** [объявление на Avito](https://www.avito.ru/voronezh/tovary_dlya_kompyutera/nvidia_cmp170_hx_x16_anlok_80_gb_110_sm_gen4_8492880790)
+>
+> 🛠️ **Переделать CMP 170HX в России:** [услуга на Avito](https://www.avito.ru/voronezh/nastolnye_kompyutery/nvidia_cmp_170hx_anlok_80_gig_gen4_sm_do_128_8437550194)
+
 Эта статья описывает реальный случай с CMP 170HX / GA100, когда повторяемая
 однобитная ошибка была привязана к одной физической странице PMA, после чего
 страница была исключена из новых выделений небольшим патчем NVIDIA Open Kernel

@@ -1,5 +1,9 @@
 # CMP 170HX Linux Guide: 64 GB Unlock → 170tune → PCIe x16 → P2P
 
+> 🇷🇺 **Buy modified CMP 170HX cards in Russia:** [Avito listing](https://www.avito.ru/voronezh/tovary_dlya_kompyutera/nvidia_cmp170_hx_x16_anlok_80_gb_110_sm_gen4_8492880790)
+>
+> 🛠️ **CMP 170HX modification service in Russia:** [Avito service listing](https://www.avito.ru/voronezh/nastolnye_kompyutery/nvidia_cmp_170hx_anlok_80_gig_gen4_sm_do_128_8437550194)
+
 **New (2026-11-22): [PCIe Gen3/Gen4: driver patches, fuse states and real measurements](docs/PCIE-GEN4-2026-11-22.md) · [Русская версия](docs/PCIE-GEN4-2026-11-22.ru.md).** Project-owned Gen3 x16 is now reproduced on 2× 80 GiB CMP 170HX: 10.26 GB/s one-way P2P, 19.59–19.60 GB/s bidirectional. Gen4 is the next test stage.
 
 [Русская версия](README.ru.md) · **[80 GiB driver + P2P](docs/CMP170HX-80GB-DRIVER-P2P.md)** · [Physical x4→x16 mod](docs/PCIE-X16-HARDWARE-MOD.md) · [Benchmarks](docs/BENCHMARKS.md) · [Troubleshooting](docs/TROUBLESHOOTING.md)

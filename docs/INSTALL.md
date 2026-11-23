@@ -1,5 +1,9 @@
 # P2P installation and verification
 
+> 🇷🇺 **Buy modified CMP 170HX cards in Russia:** [Avito listing](https://www.avito.ru/voronezh/tovary_dlya_kompyutera/nvidia_cmp170_hx_x16_anlok_80_gb_110_sm_gen4_8492880790)
+>
+> 🛠️ **CMP 170HX modification service in Russia:** [Avito service listing](https://www.avito.ru/voronezh/nastolnye_kompyutery/nvidia_cmp_170hx_anlok_80_gig_gen4_sm_do_128_8437550194)
+
 This guide covers **Stage 3** of the project: adding working CUDA P2P to an already-unlocked CMP 170HX driver tree.
 
 If your card is still stock, start with [UNLOCK.md](UNLOCK.md). If you want tuning/validation first, read [170TUNE.md](170TUNE.md).

@@ -1,5 +1,9 @@
 # CMP 170HX HBM single-bit errors: physical-page diagnosis and software retirement
 
+> 🇷🇺 **Buy modified CMP 170HX cards in Russia:** [Avito listing](https://www.avito.ru/voronezh/tovary_dlya_kompyutera/nvidia_cmp170_hx_x16_anlok_80_gb_110_sm_gen4_8492880790)
+>
+> 🛠️ **CMP 170HX modification service in Russia:** [Avito service listing](https://www.avito.ru/voronezh/nastolnye_kompyutery/nvidia_cmp_170hx_anlok_80_gig_gen4_sm_do_128_8437550194)
+
 This document describes a real CMP 170HX / GA100 case in which one repeatable
 single-bit error was isolated to one physical PMA page and removed from future
 allocations by a small, device-specific NVIDIA Open Kernel Module patch.

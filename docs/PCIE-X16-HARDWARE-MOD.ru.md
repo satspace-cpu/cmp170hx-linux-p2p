@@ -1,5 +1,9 @@
 # CMP 170HX: аппаратная переделка PCIe x4 → x16
 
+> 🇷🇺 **Купить в России переделанные карты CMP 170HX:** [объявление на Avito](https://www.avito.ru/voronezh/tovary_dlya_kompyutera/nvidia_cmp170_hx_x16_anlok_80_gb_110_sm_gen4_8492880790)
+>
+> 🛠️ **Переделать CMP 170HX в России:** [услуга на Avito](https://www.avito.ru/voronezh/nastolnye_kompyutery/nvidia_cmp_170hx_anlok_80_gig_gen4_sm_do_128_8437550194)
+
 [← Главная](../README.ru.md) · [English](PCIE-X16-HARDWARE-MOD.md)
 
 > **Это аппаратная модификация.** Нужно паять компоненты 0402 на многослойной плате GPU. Ошибка может повредить карту. Если раньше не паяли 0402 — сначала потренируйтесь на ненужной плате.

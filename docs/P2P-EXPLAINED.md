@@ -1,5 +1,9 @@
 # How the CMP 170HX P2P fix works
 
+> 🇷🇺 **Buy modified CMP 170HX cards in Russia:** [Avito listing](https://www.avito.ru/voronezh/tovary_dlya_kompyutera/nvidia_cmp170_hx_x16_anlok_80_gb_110_sm_gen4_8492880790)
+>
+> 🛠️ **CMP 170HX modification service in Russia:** [Avito service listing](https://www.avito.ru/voronezh/nastolnye_kompyutery/nvidia_cmp_170hx_anlok_80_gig_gen4_sm_do_128_8437550194)
+
 This document explains the failure mode observed on the tested dual-CMP 170HX system and why the final configuration restored normal PCIe peer bandwidth.
 
 ## Symptom 1: peer access reported as available, but bandwidth was broken

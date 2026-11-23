@@ -1,5 +1,9 @@
 # CMP 170HX physical PCIe x4 → x16 modification
 
+> 🇷🇺 **Buy modified CMP 170HX cards in Russia:** [Avito listing](https://www.avito.ru/voronezh/tovary_dlya_kompyutera/nvidia_cmp170_hx_x16_anlok_80_gb_110_sm_gen4_8492880790)
+>
+> 🛠️ **CMP 170HX modification service in Russia:** [Avito service listing](https://www.avito.ru/voronezh/nastolnye_kompyutery/nvidia_cmp_170hx_anlok_80_gig_gen4_sm_do_128_8437550194)
+
 This page summarizes the hardware modification used on our two cards. For the detailed procedure, see [PCIE-X16-HARDWARE-MOD.md](PCIE-X16-HARDWARE-MOD.md) and [the Russian version](PCIE-X16-HARDWARE-MOD.ru.md).
 
 ## What is changed

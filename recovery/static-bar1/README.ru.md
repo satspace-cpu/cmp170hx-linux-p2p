@@ -1,5 +1,9 @@
 # Исходники и режим сборки Static BAR1
 
+> 🇷🇺 **Купить в России переделанные карты CMP 170HX:** [объявление на Avito](https://www.avito.ru/voronezh/tovary_dlya_kompyutera/nvidia_cmp170_hx_x16_anlok_80_gb_110_sm_gen4_8492880790)
+>
+> 🛠️ **Переделать CMP 170HX в России:** [услуга на Avito](https://www.avito.ru/voronezh/nastolnye_kompyutery/nvidia_cmp_170hx_anlok_80_gig_gen4_sm_do_128_8437550194)
+
 [English version](README.md) · [Проверенный результат](../../docs/STATIC-BAR1-P2P.ru.md)
 
 Этот каталог хранит воспроизводимую схему **Static BAR1**. Он намеренно отделён

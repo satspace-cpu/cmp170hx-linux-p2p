@@ -1,5 +1,9 @@
 # CMP 170HX Mailbox P2P — рабочая B2-сборка
 
+> 🇷🇺 **Купить в России переделанные карты CMP 170HX:** [объявление на Avito](https://www.avito.ru/voronezh/tovary_dlya_kompyutera/nvidia_cmp170_hx_x16_anlok_80_gb_110_sm_gen4_8492880790)
+>
+> 🛠️ **Переделать CMP 170HX в России:** [услуга на Avito](https://www.avito.ru/voronezh/nastolnye_kompyutery/nvidia_cmp_170hx_anlok_80_gig_gen4_sm_do_128_8437550194)
+
 Проверенная конфигурация: 2× CMP 170HX, NVIDIA 610.43.03, ядро
 `7.0.12-cmp170bar1test`, 64 ГБ VRAM и BAR1 на каждой карте, PCIe Gen2 x16,
 IOMMU off и ACS redirect disabled.

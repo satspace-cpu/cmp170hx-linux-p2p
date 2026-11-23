@@ -1,5 +1,9 @@
 # Verified Static BAR1 CUDA P2P on CMP 170HX
 
+> 🇷🇺 **Buy modified CMP 170HX cards in Russia:** [Avito listing](https://www.avito.ru/voronezh/tovary_dlya_kompyutera/nvidia_cmp170_hx_x16_anlok_80_gb_110_sm_gen4_8492880790)
+>
+> 🛠️ **CMP 170HX modification service in Russia:** [Avito service listing](https://www.avito.ru/voronezh/nastolnye_kompyutery/nvidia_cmp_170hx_anlok_80_gig_gen4_sm_do_128_8437550194)
+
 [Русская версия](STATIC-BAR1-P2P.ru.md)
 
 This is the current, content-verified P2P result for this project. It replaces
