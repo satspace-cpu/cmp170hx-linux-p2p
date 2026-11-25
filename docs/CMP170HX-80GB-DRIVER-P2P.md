@@ -15,6 +15,8 @@ The design deliberately separates responsibilities:
 
 > Do not install the standard `8gb` profile over a hardware-unlocked 80 GiB card: the public cmpunlocker profile targets 64 GiB. Do not enable Static BAR1 for this setup either. A 64 GiB BAR1 combined with an 80 GiB framebuffer caused the driver and `nvidia-smi` to hang on our host.
 
+> **November 26, 2026 update:** the same separated 80 GiB/P2P architecture has now been validated at PCIe Gen4 x16 on four `20c2` cards. The P2P companion was not changed. See the [full Gen4 driver path, boot automation, measurements and graphs](PCIE-GEN4-2026-11-22.md).
+
 ## Verified result
 
 Tested host:

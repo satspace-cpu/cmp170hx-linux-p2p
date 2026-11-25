@@ -25,7 +25,7 @@ This repository is intended to be a practical map for CMP 170HX owners, from a n
 - **Current PCIe Gen3 / Gen4 report and project measurements** — [`PCIE-GEN4-2026-11-22.md`](PCIE-GEN4-2026-11-22.md) / [Русский](PCIE-GEN4-2026-11-22.ru.md)
 - **Historical August 2026 research snapshot** — [`PCIE-GEN3-STATUS.md`](PCIE-GEN3-STATUS.md) / [Русский](PCIE-GEN3-STATUS.ru.md)
 
-Current project status: Gen3 x16 (8 GT/s) is reproduced on two hardware-unlocked 80 GiB CMP 170HX cards with 10.26 GB/s one-way and 19.59–19.60 GB/s bidirectional CUDA P2P. Gen4 remains the next experimental stage.
+Current project status: Gen4 x16 (16 GT/s) is reproduced on four hardware-unlocked 80 GiB CMP 170HX cards. Pinned H2D is 24.17–24.38 GiB/s; all 12 directed P2P pairs work, with 46.84–48.50 GB/s bidirectional bandwidth. The enabled boot service restored all four Gen4 links and 47.18–49.11 GB/s P2P after reboot.
 
 ## P2P implementations tracked here
 

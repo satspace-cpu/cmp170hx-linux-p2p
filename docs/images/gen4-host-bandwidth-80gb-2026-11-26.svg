@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="920" height="500" viewBox="0 0 920 500" role="img" aria-labelledby="title desc">
+  <title id="title">CMP 170HX Gen4 x16 host transfer bandwidth</title>
+  <desc id="desc">Grouped bars for host to device and device to host bandwidth across four 80 GiB CMP 170HX GPUs.</desc>
+  <rect width="920" height="500" fill="#0d1117" rx="16"/>
+  <text x="460" y="38" fill="#f0f6fc" font-family="sans-serif" font-size="24" text-anchor="middle">4× CMP 170HX 80 GiB — PCIe Gen4 x16</text>
+  <text x="460" y="65" fill="#8b949e" font-family="sans-serif" font-size="14" text-anchor="middle">Pinned 256 MiB copies, 20 iterations · GiB/s</text>
+  <line x1="80" y1="420" x2="870" y2="420" stroke="#8b949e"/>
+  <line x1="80" y1="100" x2="80" y2="420" stroke="#8b949e"/>
+  <g fill="#8b949e" font-family="sans-serif" font-size="12" text-anchor="end">
+    <text x="70" y="424">0</text><text x="70" y="360">5</text><text x="70" y="296">10</text><text x="70" y="232">15</text><text x="70" y="168">20</text><text x="70" y="104">25</text>
+  </g>
+  <g stroke="#30363d" stroke-width="1"><line x1="80" y1="356" x2="870" y2="356"/><line x1="80" y1="292" x2="870" y2="292"/><line x1="80" y1="228" x2="870" y2="228"/><line x1="80" y1="164" x2="870" y2="164"/><line x1="80" y1="100" x2="870" y2="100"/></g>
+  <g font-family="sans-serif" font-size="13" text-anchor="middle">
+    <rect x="130" y="111" width="56" height="309" fill="#2f81f7" rx="4"/><rect x="192" y="138" width="56" height="282" fill="#3fb950" rx="4"/>
+    <rect x="320" y="108" width="56" height="312" fill="#2f81f7" rx="4"/><rect x="382" y="138" width="56" height="282" fill="#3fb950" rx="4"/>
+    <rect x="510" y="108" width="56" height="312" fill="#2f81f7" rx="4"/><rect x="572" y="130" width="56" height="290" fill="#3fb950" rx="4"/>
+    <rect x="700" y="108" width="56" height="312" fill="#2f81f7" rx="4"/><rect x="762" y="128" width="56" height="292" fill="#3fb950" rx="4"/>
+    <g fill="#f0f6fc"><text x="158" y="103">24.17</text><text x="220" y="130">22.06</text><text x="348" y="100">24.35</text><text x="410" y="130">22.02</text><text x="538" y="100">24.38</text><text x="600" y="122">22.69</text><text x="728" y="100">24.36</text><text x="790" y="120">22.82</text></g>
+    <g fill="#c9d1d9"><text x="189" y="445">GPU0 · 01:00.0</text><text x="379" y="445">GPU1 · 41:00.0</text><text x="569" y="445">GPU2 · 81:00.0</text><text x="759" y="445">GPU3 · c6:00.0</text></g>
+  </g>
+  <rect x="325" y="468" width="14" height="14" fill="#2f81f7"/><text x="346" y="480" fill="#c9d1d9" font-family="sans-serif" font-size="13">H2D</text>
+  <rect x="465" y="468" width="14" height="14" fill="#3fb950"/><text x="486" y="480" fill="#c9d1d9" font-family="sans-serif" font-size="13">D2H</text>
+</svg>

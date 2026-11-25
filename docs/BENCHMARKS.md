@@ -191,3 +191,11 @@ That combination proves why capability and latency alone are not enough to valid
 ## LLM observation
 
 After the final P2P fix, tensor-split inference showed noticeably smoother utilization across both GPUs, with much less oscillation in load. LLM token-per-second measurements remain workload-dependent, so CUDA transport benchmarks and LLM throughput should be treated as complementary measurements rather than interchangeable proof.
+
+## Four-GPU PCIe Gen4 x16 and P2P — 2026-11-26
+
+The project server trained four hardware-unlocked 80 GiB CMP 170HX `10de:20c2` cards at 16 GT/s x16. Pinned 256 MiB host transfers reached **24.17–24.38 GiB/s H2D** and **22.02–22.82 GiB/s D2H**. CUDA P2P was available across all 12 directed pairs: **25.32–26.00 GB/s one-way**, **46.84–48.50 GB/s bidirectional**, and typically **2.20–2.30 µs** GPU peer latency.
+
+After reboot, `cmp170-gen4.service` restored all four Gen4 x16 links and bidirectional P2P measured **47.18–49.11 GB/s**. No new NVRM Xid, uncorrectable AER or PCIe Bus Error was observed.
+
+See the [full bilingual Gen4 report](PCIE-GEN4-2026-11-22.md), [host-transfer graph](images/gen4-host-bandwidth-80gb-2026-11-26.svg), [P2P graph](images/gen4-p2p-80gb-2026-11-26.svg), and [raw output](../results/gen4-80gb-4gpu-2026-11-26.txt).

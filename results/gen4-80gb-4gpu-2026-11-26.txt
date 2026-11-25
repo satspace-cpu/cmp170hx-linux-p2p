@@ -1,0 +1,81 @@
+CMP 170HX 80 GiB PCIe Gen4 x16 and CUDA P2P validation
+Date: 2026-11-26 (Europe/Moscow)
+Host: server 19, HUANANZHI X10X99-16D
+Kernel: 7.0.12-cmp170bar1test
+Driver: NVIDIA 610.57.04
+nvidia.ko SHA256: 7dc0a1164ca3efa7015c60385482e4e2bd9cd65e9d24bc46bbd164547a9f8b57
+
+GPU inventory
+0000:01:00.0  NVIDIA CMP 170HX  81920 MiB
+0000:41:00.0  NVIDIA CMP 170HX  81920 MiB
+0000:81:00.0  NVIDIA CMP 170HX  81920 MiB
+0000:c6:00.0  NVIDIA CMP 170HX  81920 MiB
+
+PCIe link after runtime E1 and one retrain per card
+0000:01:00.0  LnkSta: Speed 16GT/s, Width x16
+0000:41:00.0  LnkSta: Speed 16GT/s, Width x16
+0000:81:00.0  LnkSta: Speed 16GT/s, Width x16
+0000:c6:00.0  LnkSta: Speed 16GT/s, Width x16
+
+Pinned host transfer, 256 MiB, 20 iterations
+GPU0: H2D 24.17 GiB/s, D2H 22.06 GiB/s
+GPU1: H2D 24.35 GiB/s, D2H 22.02 GiB/s
+GPU2: H2D 24.38 GiB/s, D2H 22.69 GiB/s
+GPU3: H2D 24.36 GiB/s, D2H 22.82 GiB/s
+
+CUDA sample device order
+Device 0: 0000:01:00.0
+Device 1: 0000:81:00.0
+Device 2: 0000:c6:00.0
+Device 3: 0000:41:00.0
+
+P2P connectivity matrix
+     D\D     0     1     2     3
+       0     1     1     1     1
+       1     1     1     1     1
+       2     1     1     1     1
+       3     1     1     1     1
+
+Unidirectional P2P enabled bandwidth, GB/s
+   D\D     0      1      2      3
+     0 1919.53  25.32  25.94  25.70
+     1  26.00 1943.41  25.90  25.79
+     2  25.72  25.87 1943.41  25.76
+     3  25.72  25.82  25.58 1943.41
+Directed peer-pair range: 25.32-26.00 GB/s; mean 25.76 GB/s.
+
+Bidirectional P2P enabled bandwidth, GB/s
+   D\D     0      1      2      3
+     0 1947.04  47.94  47.89  47.10
+     1  48.50 1947.04  47.61  46.84
+     2  47.55  47.50 1947.04  47.50
+     3  47.74  47.80  47.99 1947.04
+Directed peer-pair range: 46.84-48.50 GB/s; mean 47.66 GB/s.
+
+P2P enabled GPU latency, microseconds
+   GPU     0      1      2      3
+     0   2.06   2.22   2.25   2.22
+     1   2.30   2.04   2.24   2.25
+     2   2.22   2.22   1.98   2.20
+     3   2.21   2.22   2.23   2.33
+
+Cold/reboot persistence check
+cmp170-gen4.service: active (exited), status=0/SUCCESS
+All four links: 16GT/s x16
+All four framebuffers: 81920 MiB
+
+Bidirectional P2P after reboot, GB/s
+   D\D     0      1      2      3
+     0 1947.04  48.47  48.06  47.41
+     1  49.11 1948.25  47.78  47.18
+     2  47.88  48.01 1943.41  47.55
+     3  47.87  47.71  47.70 1949.47
+Directed peer-pair range: 47.18-49.11 GB/s; mean 47.89 GB/s.
+
+Health checks
+- No new NVRM Xid.
+- No new uncorrectable AER or PCIe Bus Error.
+- Each Gen4 transition kept x16 width and reported equalization complete.
+- nvidia-smi still reports Gen3 because RM cached the capability before the runtime Gen4 retrain.
+
+The CUDA Samples p2pBandwidthLatencyTest is a transport diagnostic, not an application benchmark.
